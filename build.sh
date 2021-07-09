@@ -5,6 +5,7 @@ cd "${BASE_DIR}"
 
 NO_PUSH="NO"
 FIX="NO"
+REFORMAT="NO"
 me=`basename "$0"`
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -14,6 +15,10 @@ while [[ $# -gt 0 ]]; do
       FIX="YES"
       shift # past argument
       ;;
+    -r|--reformat)
+      REFORMAT="YES"
+      shift # past argument
+      ;;      
     --no-push)
       NO_PUSH="YES"
       shift # past argument
@@ -45,6 +50,7 @@ function doRepo(){
         "entrypoint.sh"
         "Jenkinsfile"
         "run.sh"
+        "reformat.sh"
     )
 
     for f in "${files[@]}"
@@ -72,7 +78,7 @@ function doRepo(){
                 fi
             fi
 
-            if [[ "${f}" =~ (build.sh|deploy.sh|Dockerfile|entrypoint.sh|Jenkinsfile|run.sh) ]]; then
+            if [[ "${f}" =~ (build.sh|deploy.sh|Dockerfile|entrypoint.sh|Jenkinsfile|run.sh|reformat.sh) ]]; then
                 SOURCE_DIR="${BASE_DIR}/common/IaC"
             else
                 SOURCE_DIR="${BASE_DIR}/common"
@@ -115,6 +121,31 @@ function doRepo(){
             fi
         fi
     fi
+
+    if [[ -f init.sh ]]; then
+        chmod u+rwx,o-wx *.sh
+    fi
+
+    if [[ "${REFORMAT}" == "YES" ]]; then
+        if [[ -s "reformat.sh" ]]; then
+            
+            ./reformat.sh
+            git add .
+
+            set +e
+            git commit -m "Automated reformat"
+            status=$?
+            set -e
+
+            if [[ $status -eq 0 ]]; then
+                
+                if [[ "${NO_PUSH}" == "NO" ]]; then
+                    git push
+                fi
+            fi
+        fi
+    fi
+
     cd ..
 }
 
