@@ -104,6 +104,7 @@ function doRepo(){
         if [[ "${FIX}" == "YES" ]]; then
             git add .
             git commit -m "${ISSUES}"
+            git push --set-upstream origin Develop
             git push
         fi
     fi
