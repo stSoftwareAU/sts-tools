@@ -94,8 +94,9 @@ pipeline {
                 set -e
 
                 ls -l
+                ls -l ${REPOS_DIR}
                 pwd 
-                
+
                 ./build.sh
                 """.stripIndent()
             }
