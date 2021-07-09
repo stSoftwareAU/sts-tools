@@ -127,13 +127,10 @@ mkdir -p .repos
 cd .repos
 for repo in "${repos[@]}"
 do
-    echo "clone ${repo}"
+
     if [[ ! -d ${repo} ]]; then
+        echo "clone ${repo}"
         git clone -q git@github.com:ausdto/${repo}.git ${repo}
-    else
-        cd ${repo}
-        git pull
-        cd ..
     fi
 
     cd ${repo}
