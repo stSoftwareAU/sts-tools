@@ -123,7 +123,7 @@ pipeline {
                         env
                         for d in .repos/*; do
                             cd $d
-
+                            git push --set-upstream origin Develop
                             git push 
                             cd ..
                         done
