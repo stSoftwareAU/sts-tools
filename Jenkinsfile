@@ -113,7 +113,9 @@ pipeline {
                     ./build.sh --fix --no-push
                     """.stripIndent()
 
-                withCredentials([sshUserPrivateKey(credentialsId: "${GIT_CREDENTIALS}", keyFileVariable: 'SSH_KEY')]) {
+withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId:"${GIT_CREDENTIALS}",
+usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS']]) {
+                // withCredentials([sshUserPrivateKey(credentialsId: "${GIT_CREDENTIALS}", keyFileVariable: 'SSH_KEY')]) {
                 
                     sh """\
                         #!/bin/bash
