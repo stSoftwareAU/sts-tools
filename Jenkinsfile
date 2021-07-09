@@ -114,20 +114,26 @@ pipeline {
                     """.stripIndent()
 
                 script {
-                    GIT_CREDS = credentials("${GIT_CREDENTIALS}")
+
+                    withCredentials(
+                        [usernamePassword(credentialsId: "${GIT_CREDENTIALS}",
+                        usernameVariable: 'username',
+                        passwordVariable: 'password')])
+                        {
+                    
 
                
-                    sh '''\
+                    sh """\
                         #!/bin/bash
                         set -ex
                         env
                         for d in .repos/*; do
                             cd $d
-                            git push --set-upstream origin Develop
+                            # git push --set-upstream origin Develop
                             git push 
                             cd ..
                         done
-                    '''.stripIndent()
+                    """.stripIndent()
                 }
             }
         
