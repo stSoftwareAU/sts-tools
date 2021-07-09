@@ -113,8 +113,11 @@ pipeline {
                     ./build.sh --fix --no-push
                     """.stripIndent()
 
-withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId:"${GIT_CREDENTIALS}",
-usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS']]) {
+                    withCredentials([usernamePassword(credentialsId: env.GIT_CREDENTIALS, usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    script {
+                        env.encodedPass=URLEncoder.encode(PASS, "UTF-8")
+                    }
+
                 // withCredentials([sshUserPrivateKey(credentialsId: "${GIT_CREDENTIALS}", keyFileVariable: 'SSH_KEY')]) {
                 
                     sh """\
