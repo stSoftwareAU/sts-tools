@@ -79,9 +79,6 @@ pipeline {
                         credentialsId: "${GIT_CREDENTIALS}",
                         url: 'https://github.com/AusDTO/dga-selenium-tests.git'
                 }
-                
-
-                
             }
         }
 
@@ -96,6 +93,9 @@ pipeline {
                 #!/bin/bash
                 set -e
 
+                ls -l
+                pwd 
+                
                 ./build.sh
                 """.stripIndent()
             }
