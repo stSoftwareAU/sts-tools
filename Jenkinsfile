@@ -113,16 +113,12 @@ pipeline {
                     ./build.sh --fix --no-push
                     """.stripIndent()
 
-                script {
 
-                    withCredentials(
-                        [usernamePassword(credentialsId: "${GIT_CREDENTIALS}",
-                        usernameVariable: 'username',
-                        passwordVariable: 'password')])
-                        {
-                    
-
-                
+                withCredentials(
+                    [usernamePassword(credentialsId: "${GIT_CREDENTIALS}",
+                    usernameVariable: 'username',
+                    passwordVariable: 'password')])
+                    {
                         sh """\
                             #!/bin/bash
                             set -ex
@@ -136,6 +132,7 @@ pipeline {
                         """.stripIndent()
                     }
                 }
+            
             }
         
         }
