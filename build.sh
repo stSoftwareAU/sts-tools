@@ -3,6 +3,7 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
+NO_PUSH="NO"
 FIX="NO"
 me=`basename "$0"`
 while [[ $# -gt 0 ]]; do
@@ -13,8 +14,12 @@ while [[ $# -gt 0 ]]; do
       FIX="YES"
       shift # past argument
       ;;
+    --no-push)
+      NO_PUSH="YES"
+      shift # past argument
+      ;;
     *)    # unknown option
-      echo "Usage ${me} [-f|--fix]"
+      echo "Usage ${me} [-f|--fix] [--no-push]"
       echo "Unknown option ${key}"
       exit 1
       ;;
@@ -104,8 +109,10 @@ function doRepo(){
         if [[ "${FIX}" == "YES" ]]; then
             git add .
             git commit -m "${ISSUES}"
-            git push --set-upstream origin Develop
-            git push
+            
+            if [[ "${NO_PUSH}" == "NO" ]]; then
+                git push
+            fi
         fi
     fi
     cd ..

@@ -22,7 +22,6 @@ pipeline {
 
         stage('checkout') {
             
-
             steps {
 
                 dir("${REPOS_DIR}/dga-ckan_web_container") {
@@ -111,9 +110,27 @@ pipeline {
                     ls -l ${REPOS_DIR}
                     pwd 
 
-                    ./build.sh --fix
+                    ./build.sh --fix --no-push
                     """.stripIndent()
+
+                script {
+                    GIT_CREDS = credentials("${GIT_CREDENTIALS}")
+
+               
+                    sh '''\
+                        #!/bin/bash
+                        set -ex
+                        env
+                        for d in .repos/*; do
+                            cd $d
+
+                            git push 
+                            cd ..
+                        done
+                    '''.stripIndent()
+                }
             }
+        
         }
     }
 }
