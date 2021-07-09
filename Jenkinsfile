@@ -96,7 +96,7 @@ pipeline {
                 #!/bin/bash
                 set -e
 
-                ./deploy.sh
+                ./build.sh
                 """.stripIndent()
             }
                 
@@ -110,7 +110,7 @@ pipeline {
                     #!/bin/bash
                     set -ex
 
-                    ./deploy.sh --fix
+                    ./build.sh --fix
                     """.stripIndent()
             }
         }

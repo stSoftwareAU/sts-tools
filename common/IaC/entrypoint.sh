@@ -1,4 +1,7 @@
 #!/usr/bin/env sh
+#
+# WARNING: Automatically copied from dga-template
+#
 set -ex
 
 function doInit()

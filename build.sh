@@ -34,6 +34,12 @@ function doRepo(){
         "init.sh"
         "push.sh"
         "release.sh"
+        "build.sh"
+        "deploy.sh"
+        "Dockerfile"
+        "entrypoint.sh"
+        "Jenkinsfile"
+        "run.sh"
     )
 
     for f in "${files[@]}"
@@ -61,7 +67,11 @@ function doRepo(){
                 fi
             fi
 
-            SOURCE_DIR="${BASE_DIR}/common"
+            if [[ "${f}" =~ (build.sh|deploy.sh|Dockerfile|entrypoint.sh|Jenkinsfile|run.sh) ]]; then
+                SOURCE_DIR="${BASE_DIR}/common/IaC"
+            else
+                SOURCE_DIR="${BASE_DIR}/common"
+            fi
         fi
 
         if [[ -s $f ]]; then
@@ -112,7 +122,6 @@ declare -a repos=(
     "dga-selenium-tests"
 )
 
-rm -rf .repos
 mkdir -p .repos
 
 cd .repos
@@ -153,6 +162,8 @@ do
 
     fi
 done
+
+rm -rf .repos
 
 if [[ "${ALL_ISSUES}" != "" ]]; then
     echo ""

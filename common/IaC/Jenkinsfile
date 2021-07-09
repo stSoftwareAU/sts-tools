@@ -1,3 +1,6 @@
+/*
+ * WARNING: Automatically copied from dga-template
+ */
 pipeline {
     agent none
     triggers {

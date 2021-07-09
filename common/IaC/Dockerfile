@@ -1,4 +1,7 @@
 # syntax=docker/dockerfile:1
+#
+# WARNING: Automatically copied from dga-template
+#
 FROM hashicorp/terraform:light
 
 COPY --chown=nobody:nobody entrypoint.sh .
