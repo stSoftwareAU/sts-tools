@@ -113,29 +113,19 @@ pipeline {
                     ./build.sh --fix --no-push
                     """.stripIndent()
 
-                    withCredentials([usernamePassword(credentialsId: env.GIT_CREDENTIALS, usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    script {
-                        env.encodedPass=URLEncoder.encode(PASS, "UTF-8")
-                    }
-
-                // withCredentials([sshUserPrivateKey(credentialsId: "${GIT_CREDENTIALS}", keyFileVariable: 'SSH_KEY')]) {
+                    // sh """\
+                    //     #!/bin/bash
+                    //     set -ex
+                    //     env
+                    //     for d in .repos/*; do
+                    //         cd $d
+                    //         # git push --set-upstream origin Develop
+                    //         git push 
+                    //         cd ..
+                    //     done
+                    // """.stripIndent()
                 
-                    sh """\
-                        #!/bin/bash
-                        set -ex
-                        env
-                        for d in .repos/*; do
-                            cd $d
-                            # git push --set-upstream origin Develop
-                            git push 
-                            cd ..
-                        done
-                    """.stripIndent()
-                }
             }
-            
-            
-        
         }
     }
 }
