@@ -8,11 +8,7 @@ cd "${BASE_DIR}"
 
 ENV_FILE=".env.properties"
 if [[ -f ${ENV_FILE} ]]; then
-    source ${ENV_FILE} 
-fi
-
-if [[ -z "${REPO}" ]]; then
-  REPO=$(basename -s .git `git config --get remote.origin.url`)
+    source ${ENV_FILE}
 fi
 
 if [[ -z "${DEPARTMENT}" ]] || [[ -z "${ACCOUNT_ID}" ]] || [[ -z "${REGION}" ]]; then
@@ -30,11 +26,26 @@ if [[ -z "${AREA}" ]]; then
   fi
 fi
 
+export AREA
+
 echo "Initialize DEPARTMENT(${DEPARTMENT}), ACCOUNT_ID(${ACCOUNT_ID}), REGION(${REGION}) and AREA(${AREA})"
 
 export REGION="${REGION}"
 export AWS_DEFAULT_REGION="${REGION}"
-export DOCKER_TAG=`tr "[:upper:]" "[:lower:]" <<< "${REPO}"`
+
+if [[ -z "${DOCKER_REPO}" ]]; then
+  if [[ -z "${GIT_REPO}" ]]; then
+    GIT_REPO=$(basename -s .git `git config --get remote.origin.url`)
+  fi
+
+  DOCKER_REPO=`tr "[:upper:]" "[:lower:]" <<< "${GIT_REPO}"`
+fi
+
+export DOCKER_REPO
+
+if [[ ! -z "${DOCKER_ACCOUNT_ID}" ]]; then
+  export DOCKER_ACCOUNT_ID
+fi
 
 if [[ ! -z "${ROLE}" ]]; then
   ASSUME_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/${ROLE}"
@@ -50,7 +61,7 @@ if [[ ! -z "${ROLE}" ]]; then
   export AWS_ACCESS_KEY_ID=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.AccessKeyId')
   export AWS_SECRET_ACCESS_KEY=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SecretAccessKey')
   export AWS_SESSION_TOKEN=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken')
-fi 
+fi
 
 export S3_BUCKET=`echo "${DEPARTMENT}-terraform-${AREA}-${REGION}"|tr "[:upper:]" "[:lower:]"`
 LIST_BUCKETS=`aws s3api list-buckets`
