@@ -18,7 +18,7 @@ while [[ $# -gt 0 ]]; do
     -r|--reformat)
       REFORMAT="YES"
       shift # past argument
-      ;;      
+      ;;
     --no-push)
       NO_PUSH="YES"
       shift # past argument
@@ -39,7 +39,7 @@ function doRepo(){
     cd ${repo}
     ISSUES=""
     declare -a files=(
-        "LICENSE"  
+        "LICENSE"
         ".gitignore"
         "init.sh"
         "push.sh"
@@ -56,7 +56,7 @@ function doRepo(){
     for f in "${files[@]}"
     do
         echo "check $f"
-        
+
         if [[ "${f}" =~ (LICENSE|.gitignore) ]]; then
             SOURCE_DIR="${BASE_DIR}"
         else
@@ -69,7 +69,7 @@ function doRepo(){
                     continue
                 fi
             elif [[ "${f}" =~ (init.sh) ]]; then
-                if [[ ! "${type}" =~ (IaC|manual) ]]; then
+                if [[ ! "${type}" =~ (IaC|manual|container) ]]; then
                     continue
                 fi
             else
@@ -98,7 +98,7 @@ function doRepo(){
                     cp "${SOURCE_DIR}/$f" .
                 fi
             fi
-        else 
+        else
             MSG="Missing file $f"
             echo "${MSG}"
             ISSUES+="${repo}: ${MSG}"
@@ -109,13 +109,13 @@ function doRepo(){
             fi
         fi
     done
-    
+
     if [[ "${ISSUES}" != "" ]]; then
 
         if [[ "${FIX}" == "YES" ]]; then
             git add .
             git commit -m "${ISSUES}"
-            
+
             if [[ "${NO_PUSH}" == "NO" ]]; then
                 git push
             fi
@@ -128,7 +128,7 @@ function doRepo(){
 
     if [[ "${REFORMAT}" == "YES" ]]; then
         if [[ -s "reformat.sh" ]]; then
-            
+
             ./reformat.sh
             git add .
 
@@ -138,7 +138,7 @@ function doRepo(){
             set -e
 
             if [[ $status -eq 0 ]]; then
-                
+
                 if [[ "${NO_PUSH}" == "NO" ]]; then
                     git push
                 fi
@@ -154,8 +154,8 @@ declare -a repos=(
     "dga-ckan_web_infrastructure"
     "dga-configure"
     "dga-golden-image"
-    "dga-jenkins-pipeline"  
-    "dga-network-pipeline"  
+    "dga-jenkins-pipeline"
+    "dga-network-pipeline"
     "dga-push_pull-deploy"
     "dga-scratch_shutdown"
     "dga-selenium-tests"
@@ -173,7 +173,7 @@ do
     fi
 
     cd ${repo}
-    
+
     git checkout Develop
     cd ..
 done
@@ -184,18 +184,19 @@ do
     type="common"
     if [[ "${repo}" == "dga-selenium-tests" ]]; then
         type="other"
-    elif [[ "${repo}" =~ (dga-configure|dga-ckan_web_container) ]]; then
+    elif [[ "${repo}" =~ (dga-configure) ]]; then
+        type="manual"
+    elif [[ "${repo}" =~ (dga-ckan_web_container) ]]; then
         type="container"
     else
         type="IaC"
     fi
 
     doRepo ${repo} ${type}
-   
+
     if [[ "${ISSUES}" != "" ]]; then
         ALL_ISSUES+="${ISSUES}"
         ALL_ISSUES+=$'\n'
-
     fi
 done
 
