@@ -5,6 +5,7 @@ cd "${BASE_DIR}"
 
 NO_PUSH="NO"
 FIX="NO"
+CLEAN="NO"
 REFORMAT="NO"
 me=`basename "$0"`
 while [[ $# -gt 0 ]]; do
@@ -15,6 +16,10 @@ while [[ $# -gt 0 ]]; do
       FIX="YES"
       shift # past argument
       ;;
+    -c|--clean)
+      CLEAN="YES"
+      shift # past argument
+      ;;      
     -r|--reformat)
       REFORMAT="YES"
       shift # past argument
@@ -24,7 +29,7 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       ;;
     *)    # unknown option
-      echo "Usage ${me} [-f|--fix] [--no-push]"
+      echo "Usage ${me} [-f|--fix] [-c|--clean] [-r|--reformat] [--no-push]"
       echo "Unknown option ${key}"
       exit 1
       ;;
@@ -60,7 +65,7 @@ function doRepo(){
         if [[ "${f}" =~ (LICENSE|.gitignore) ]]; then
             SOURCE_DIR="${BASE_DIR}"
         else
-            if [[ "${type}" == "other" ]]; then
+            if [[ "${type}" == "Tests" ]]; then
                 continue
             fi
 
@@ -69,7 +74,7 @@ function doRepo(){
                     continue
                 fi
             elif [[ "${f}" =~ (init.sh) ]]; then
-                if [[ ! "${type}" =~ (IaC|manual|container) ]]; then
+                if [[ ! "${type}" =~ (IaC|Manual|Docker) ]]; then
                     continue
                 fi
             else
@@ -150,16 +155,28 @@ function doRepo(){
 }
 
 declare -a repos=(
-    "dga-ckan_web_container"
-    "dga-ckan_web_infrastructure"
-    "dga-configure"
+    "dga-network-infrastructure"
     "dga-golden-image"
-    "dga-jenkins-pipeline"
-    "dga-network-pipeline"
+    "dga-jenkins-infrastructure"
     "dga-push_pull-deploy"
-    "dga-scratch_shutdown"
+    "dga-ckan_web"
     "dga-selenium-tests"
+    "dga-ckan_web-infrastructure"
+    "dga-roles"
+    "dga-ngix"
+    "dga-ngix-infrastructure"
+    "dga-solr"
+    "dga-solr-infrastructure"    
+    "dga-geoserver"
+    "dga-services"
+    "dga-start_of_day"
+    "dga-end_of_day"
+    "dga-configure"
 )
+
+if [[ "${CLEAN}" == "YES" ]]; then
+  rm -rf .repos
+fi
 
 mkdir -p .repos
 
@@ -183,11 +200,14 @@ for repo in "${repos[@]}"
 do
     type="common"
     if [[ "${repo}" == "dga-selenium-tests" ]]; then
-        type="other"
+        type="Tests"
     elif [[ "${repo}" =~ (dga-configure) ]]; then
-        type="manual"
-    elif [[ "${repo}" =~ (dga-ckan_web_container) ]]; then
-        type="container"
+        type="Manual"
+    elif [[ "${repo}" =~ ^(dga-ckan_web|dga-ngix|dga-solr|dga-geoserver|dga-services)$ ]]; then
+        type="Docker"
+    elif [[ "${repo}" =~ (dga-tools) ]]; then
+        echo "ERROR: self reference"
+        exit 1
     else
         type="IaC"
     fi
