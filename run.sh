@@ -53,7 +53,7 @@ if [[ ! -d "${TOOLS_WORKSPACE}" ]]; then
     exit 1
 fi
 
-# . ./init.sh
+. ./init.sh
 # TOOLS_REPO="dga-tools"
 
 docker run \
