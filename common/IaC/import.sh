@@ -7,6 +7,10 @@ BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
 . ./init.sh
+ws_dir=$(mktemp -d -t ws_XXXXXXXXXX)
+cp -a ${WORKSPACE}/* ${ws_dir}/
+
+cd ${ws_dir}
 
 tf_dir=$(mktemp -d -t tf_XXXXXXXXXX)
 
@@ -26,8 +30,9 @@ docker run \
     --env AWS_DEFAULT_REGION \
     --volume ${tf_dir}/store:/home/IaC/store \
     ${DOCKER_REPO}:latest \
-    apply
+    import $1 $2
 
 aws s3 cp ${tf_dir}/store s3://${s3_tf}/store --recursive
 
 rm -rf ${tf_dir}
+rm -rf ${ws_dir}

@@ -6,9 +6,19 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
-ENV_FILE=".env.properties"
+if [[ -z "${WORKSPACE}" ]]; then
+  WORKSPACE="${BASE_DIR}"
+fi 
+
+export WORKSPACE
+
+ENV_FILE="${WORKSPACE}/.env.properties"
 if [[ -f ${ENV_FILE} ]]; then
     source ${ENV_FILE}
+fi
+
+if [[ -z "${REGION}" ]]; then
+  REGION="${AWS_DEFAULT_REGION}"
 fi
 
 if [[ -z "${DEPARTMENT}" ]] || [[ -z "${ACCOUNT_ID}" ]] || [[ -z "${REGION}" ]]; then
@@ -30,12 +40,16 @@ export AREA
 
 echo "Initialize DEPARTMENT(${DEPARTMENT}), ACCOUNT_ID(${ACCOUNT_ID}), REGION(${REGION}) and AREA(${AREA})"
 
+export DEPARTMENT
+export ACCOUNT_ID
 export REGION="${REGION}"
 export AWS_DEFAULT_REGION="${REGION}"
 
 if [[ -z "${DOCKER_REPO}" ]]; then
   if [[ -z "${GIT_REPO}" ]]; then
+    cd "${WORKSPACE}"
     GIT_REPO=$(basename -s .git `git config --get remote.origin.url`)
+    cd "${BASE_DIR}"
   fi
 
   DOCKER_REPO=`tr "[:upper:]" "[:lower:]" <<< "${GIT_REPO}"`

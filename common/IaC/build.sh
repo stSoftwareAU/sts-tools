@@ -8,6 +8,11 @@ cd "${BASE_DIR}"
 
 . ./init.sh
 
+ws_dir=$(mktemp -d -t ws_XXXXXXXXXX)
+cp -a ${WORKSPACE}/* ${ws_dir}/
+
+cd ${ws_dir}
+
 if [[ -f pre-build.sh ]]; then
     ./pre-build.sh
 fi 
@@ -19,7 +24,7 @@ s3_tf="${S3_BUCKET}/${DOCKER_REPO}"
 aws s3 cp s3://${s3_tf} ${tf_dir} --recursive
 chmod -R ugo+rw ${tf_dir}
 
-tmpVars=$(mktemp /tmp/tf-vars.XXXXXX)
+tmpVars=$(mktemp vars_XXXXXX.json)
 
 if [[ -s ${tf_dir}/config.json ]]; then
     jq ".tfvars//{}" ${tf_dir}/config.json > ${tmpVars} 
@@ -33,5 +38,9 @@ rm ${tmpVars}
 
 docker build --tag ${DOCKER_REPO}:latest .
 
+## Clean up.
 rm -r ${tf_dir}
 rm -f IaC/.auto.tfvars.json
+
+cd "${BASE_DIR}" 
+rm -r ${ws_dir}
