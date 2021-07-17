@@ -19,7 +19,7 @@ while [[ $# -gt 0 ]]; do
     -c|--clean)
       CLEAN="YES"
       shift # past argument
-      ;;      
+      ;;
     -r|--reformat)
       REFORMAT="YES"
       shift # past argument
@@ -86,11 +86,36 @@ function doRepo(){
             if [[ "${f}" =~ (build.sh|deploy.sh|Dockerfile|entrypoint.sh|Jenkinsfile|run.sh|reformat.sh) ]]; then
                 SOURCE_DIR="${BASE_DIR}/common/IaC"
             else
-                SOURCE_DIR="${BASE_DIR}/common"
+                SOURCE_DIR="${BASE_DIR}/"
             fi
         fi
 
         if [[ -s $f ]]; then
+          if [[ "${type}" == "IaC" ]]; then
+            if [[ "${f}" =~ (build.sh|deploy.sh|Dockerfile|entrypoint.sh|import.sh|pull.sh|reformat.sh|run.sh|push.sh|init.sh|release.sh) ]]; then
+              MSG="Duplicate file $f"
+              echo "${MSG}"
+              ISSUES+="${repo}: ${MSG}"
+              ISSUES+=$'\n'
+
+              if [[ "${FIX}" == "YES" ]]; then
+                  rm "$f"
+              fi
+            else
+              tmpDiff=$(mktemp -t diff-XXXXXXXXX)
+              diff "${SOURCE_DIR}/$f" $f |tee ${tmpDiff}
+
+              if [[ -s ${tmpDiff} ]]; then
+                  MSG="Differences in file $f"
+                  echo "${MSG}"
+                  ISSUES+="${repo}: ${MSG}"
+                  ISSUES+=$'\n'
+                  if [[ "${FIX}" == "YES" ]]; then
+                      cp "${SOURCE_DIR}/$f" .
+                  fi
+              fi
+            fi
+          else
             tmpDiff=$(mktemp -t diff-XXXXXXXXX)
             diff "${SOURCE_DIR}/$f" $f |tee ${tmpDiff}
 
@@ -103,7 +128,11 @@ function doRepo(){
                     cp "${SOURCE_DIR}/$f" .
                 fi
             fi
+          fi
         else
+          if [[ "${type}" == "IaC" ]] && [[ "${f}" =~ (build.sh|deploy.sh|Dockerfile|entrypoint.sh|import.sh|pull.sh|reformat.sh|run.sh|push.sh|init.sh|release.sh) ]]; then
+            echo "no duplicate ${f}"
+          else
             MSG="Missing file $f"
             echo "${MSG}"
             ISSUES+="${repo}: ${MSG}"
@@ -112,6 +141,7 @@ function doRepo(){
             if [[ "${FIX}" == "YES" ]]; then
                 cp "${SOURCE_DIR}/$f" .
             fi
+          fi
         fi
     done
 
@@ -166,7 +196,7 @@ declare -a repos=(
     "dga-ngix"
     "dga-ngix-infrastructure"
     "dga-solr"
-    "dga-solr-infrastructure"    
+    "dga-solr-infrastructure"
     "dga-geoserver"
     "dga-services"
     "dga-start_of_day"
