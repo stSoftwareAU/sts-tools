@@ -4,10 +4,10 @@ set -e
 
 function doInit()
 {
-  if [[ ! -d /home/workspace/IaC ]]; then 
+  if [[ ! -d /home/workspace/IaC ]]; then
     echo "Not A IaC workspace"
     exit 1
-  fi 
+  fi
 
   export WORKSPACE="/home/workspace/"
 
@@ -41,7 +41,7 @@ function doDeploy()
 
 function doImport()
 {
-  ./import.sh $1 $2 
+  ./import.sh $1 $2
 }
 
 function doRelease()
@@ -54,10 +54,10 @@ function doReformat()
   ./reformat.sh
 }
 
-function doMode() 
+function doMode()
 {
   mode=$1
-  if [[ -z "${mode}" ]]; then 
+  if [[ -z "${mode}" ]]; then
     echo "Mode not defined"
     exit 1
   fi
@@ -68,7 +68,7 @@ function doMode()
       ;;
     repl)
       doREPL
-      ;;     
+      ;;
     build)
       doBuild
       ;;
@@ -83,10 +83,10 @@ function doMode()
       ;;
     deploy)
       doDeploy
-      ;;    
+      ;;
     import)
       doImport $2 $3
-      ;;   
+      ;;
     *)
       echo "${mode}: Unknown mode"
       exit 5
@@ -99,12 +99,12 @@ function listChoices()
   clear
 
   if [[ "${AREA}" =~ ^[pP]rod(|uction)$ ]]; then
-    COLOR="\e[5m\e[35m" 
+    COLOR="\e[5m\e[35m"
   elif [[ "${AREA}" =~ ^[sS]tag(|ing)$ ]]; then
-    COLOR="\e[5m\e[34m" 
+    COLOR="\e[5m\e[34m"
   elif [[ "${AREA}" =~ ^[sS]cratch$ ]]; then
     COLOR="\e[5m\e[32m"
-  else 
+  else
     COLOR="\e[5m\e[41m"
   fi
 
@@ -114,8 +114,8 @@ function listChoices()
   echo "2) DEPLOY:  Deploy the IaC"
   echo "3) PUSH:    Push the docker image"
   echo "4) PULL:    Pull the docker image"
-  echo "5) RELEASE: Release the docker image"  
-  echo "6) IMPORT:  Import a manually created element"  
+  echo "5) RELEASE: Release the docker image"
+  echo "6) IMPORT:  Import a manually created element"
   echo "9) SHELL:   Bash shell"
   echo ""
   echo "0) EXIT"
@@ -142,27 +142,27 @@ function doREPL()
         ;;
       5)
         doMode release
-        ;;        
+        ;;
       6)
         read -p 'Resource: ' resource
         read -p 'ID: ' id
         doMode import "${resource}" "${id}"
-        ;;        
+        ;;
       9)
         doMode shell
         ;;
       0)
         exit 0
         ;;
-      *)    
+      *)
         echo "Unknown choice ${choice}"
         ;;
-    esac 
+    esac
     echo ""
     read -n 1 -s -r -p "Press any key to continue"
     listChoices
   done
 }
-  
+
 doInit
 doMode $1 $2 $3
