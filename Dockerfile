@@ -1,27 +1,28 @@
 # syntax=docker/dockerfile:1
-#
-# WARNING: Automatically copied from dga-template
-#
+
 FROM amazon/aws-cli:latest
 
-RUN yum install git jq -y && \
-    amazon-linux-extras install docker
+RUN cat /etc/passwd
 
-COPY entrypoint.sh /entrypoint.sh 
+RUN yum install git jq -y && \
+    amazon-linux-extras install docker && \
+    useradd -u 1000 -d /home/jenkins jenkins && \
+    usermod -aG docker jenkins
+
+COPY docker/entrypoint.sh /entrypoint.sh 
 RUN chmod u+x /entrypoint.sh
 
-RUN mkdir /home/tools
-
-WORKDIR /home/tools
+WORKDIR /home/jenkins
 
 COPY init.sh .
+COPY docker/bashrc.sh .bashrc
 COPY release.sh .
 COPY push.sh .
 COPY common/IaC/ .
 
-RUN chmod -R u+x /home/tools/*.sh
-# RUN chown -R nobody:nobody /home/tools
+RUN chmod -R u+x /home/jenkins/*.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["repl"]
+USER jenkins
+CMD ["--mode", "repl"]

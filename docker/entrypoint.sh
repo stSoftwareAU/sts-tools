@@ -164,5 +164,31 @@ function doREPL()
   done
 }
 
-doInit
-doMode $1 $2 $3
+args=()
+MODE=""
+me=`basename "$0"`
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    -m|--mode)
+      shift # past argument
+      MODE="$1"
+      ;;
+    *)
+      args+=("${1}")
+      ;;
+  esac
+
+  shift
+done
+
+export HOME=/home/jenkins
+export PATH="/home/jenkins:${PATH}"
+
+if [[ -z "${MODE}" ]]; then
+  exec "${args[@]}"
+else
+  doInit
+  doMode ${MODE} "${args[@]}"
+fi

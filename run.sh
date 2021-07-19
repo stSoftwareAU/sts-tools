@@ -1,46 +1,46 @@
 #!/bin/bash
-#
-# WARNING: Automatically copied from dga-template
-#
 set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
 TOOLS_WORKSPACE="${WORKSPACE}"
-IMPORT_RESOURCE=""
-IMPORT_ID=""
-MODE="repl"
+args=()
+MODE=""
+
 me=`basename "$0"`
 while [[ $# -gt 0 ]]; do
   key="$1"
+  # ((pos+=1))
 
   case $key in
     -w|--workspace)
       shift # past argument
       TOOLS_WORKSPACE="$1"
-      shift
+      # shift
       ;;
-    -r|--resource)
-      shift # past argument
-      IMPORT_RESOURCE="$1"
-      shift
-      ;;
-    -i|--id)
-      shift # past argument
-      IMPORT_ID="$1"
-      shift
-      ;;      
+#    -r|--resource)
+#      shift # past argument
+#      IMPORT_RESOURCE="$1"
+#      shift
+#      ;;
+#    -i|--id)
+#      shift # past argument
+#      IMPORT_ID="$1"
+#      shift
+#      ;;      
     -m|--mode)
       shift # past argument
       MODE="$1"
-      shift
+      args+=("--mode")
+      args+=("${MODE}")
+      # shift
       ;;
-    *)    # unknown option
-      echo "Usage ${me} ([-w|--workspace] dir) ([-m|--mode] mode)"
-      echo "Unknown option ${key}"
-      exit 1
+    *)
+      args+=("${1}")
       ;;
   esac
+
+  shift
 done
 
 if [[ -z "${TOOLS_WORKSPACE}" ]]; then 
@@ -53,26 +53,18 @@ if [[ ! -d "${TOOLS_WORKSPACE}" ]]; then
     exit 1
 fi
 
-. ./init.sh
-# TOOLS_REPO="dga-tools"
+# . ./init.sh
+TOOLS_REPO="dga-tools"
 
 docker run \
     --dns 8.8.8.8 \
     --rm \
+    --user 1000:1000 \
     --interactive \
     --tty \
-    --env AWS_ACCESS_KEY_ID \
-    --env AWS_SECRET_ACCESS_KEY \
-    --env AWS_SESSION_TOKEN \
-    --env AWS_DEFAULT_REGION \
-    --env ACCOUNT_ID \
-    --env GIT_COMMIT \
-    --env DEPARTMENT \
-    --env AREA \
-    --env ROLE \
-    --env PROFILE \
     --volume /var/run/docker.sock:/var/run/docker.sock \
     --volume ${TOOLS_WORKSPACE}:/home/workspace \
+    --volume ${HOME}/.aws:/home/jenkins/.aws \
     --volume /tmp:/tmp \
-    ${DOCKER_REPO}:latest \
-    ${MODE} ${IMPORT_RESOURCE} ${IMPORT_ID}
+    ${TOOLS_REPO}:latest \
+    "${args[@]}"

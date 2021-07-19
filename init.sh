@@ -17,6 +17,17 @@ if [[ -f ${ENV_FILE} ]]; then
     source ${ENV_FILE}
 fi
 
+if [[ -z "${ACCOUNT_ID}" ]]; then
+  tmpIdentity=$(mktemp /tmp/identity_XXXXXX.json)
+  
+  curl -s http://169.254.169.254/latest/dynamic/instance-identity/document > ${tmpIdentity}||true
+
+  if [[ -s ${tmpIdentity} ]]; then
+    ACCOUNT_ID=$(jq -r .accountId  ${tmpIdentity})
+    REGION=$(jq -r .region  ${tmpIdentity})
+  fi
+fi
+
 if [[ -z "${REGION}" ]]; then
   REGION="${AWS_DEFAULT_REGION}"
 fi
@@ -27,12 +38,14 @@ if [[ -z "${DEPARTMENT}" ]] || [[ -z "${ACCOUNT_ID}" ]] || [[ -z "${REGION}" ]];
 fi
 
 if [[ -z "${AREA}" ]]; then
+  cd "${WORKSPACE}"
   tmpAREA=`git branch --show-current`
+  cd "${BASE_DIR}"
 
   if [[ "${tmpAREA}" =~ (Production|Staging) ]]; then
     AREA="${tmpAREA}"
   else
-    AREA="scratch"
+    AREA="Scratch"
   fi
 fi
 
