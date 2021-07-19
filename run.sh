@@ -59,12 +59,12 @@ TOOLS_REPO="dga-tools"
 docker run \
     --dns 8.8.8.8 \
     --rm \
-    --user 1000:1000 \
+    --user $(id -u):$(getent group docker|cut -d ':' -f 3)\
     --interactive \
     --tty \
     --volume /var/run/docker.sock:/var/run/docker.sock \
     --volume ${TOOLS_WORKSPACE}:/home/workspace \
-    --volume ${HOME}/.aws:/home/jenkins/.aws \
+    --volume ${HOME}/.aws:/home/tools/.aws \
     --volume /tmp:/tmp \
     ${TOOLS_REPO}:latest \
     "${args[@]}"

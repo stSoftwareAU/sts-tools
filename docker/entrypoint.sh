@@ -2,14 +2,23 @@
 
 set -e
 
-function doInit()
+function setWS()
 {
-  if [[ ! -d /home/workspace/IaC ]]; then
-    echo "Not A IaC workspace"
+  if [[ -z "${WORKSPACE}" ]]; then
+    WORKSPACE="/home/workspace/"
+  fi
+
+  if [[ ! -d "${WORKSPACE}/IaC" ]]; then
+    echo "Not A IaC workspace: ${WORKSPACE}"
     exit 1
   fi
 
-  export WORKSPACE="/home/workspace/"
+  export WORKSPACE
+}
+
+function doInit()
+{
+  setWS
 
   . ./init.sh
 }
@@ -183,8 +192,9 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-export HOME=/home/jenkins
-export PATH="/home/jenkins:${PATH}"
+setWS
+export HOME=/home/tools
+export PATH="/home/tools:${PATH}"
 
 if [[ -z "${MODE}" ]]; then
   exec "${args[@]}"
