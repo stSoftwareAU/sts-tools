@@ -1,4 +1,4 @@
-# dga-template
+# dga-tools
 
 
 ## 🟨 Yet to be implemented
