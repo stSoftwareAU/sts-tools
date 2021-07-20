@@ -48,6 +48,7 @@ function doRepo(){
         ".gitignore"
         "init.sh"
         "push.sh"
+        "pull.sh"
         "release.sh"
         "build.sh"
         "deploy.sh"

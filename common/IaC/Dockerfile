@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# WARNING: Automatically copied from dga-template
+# WARNING: Automatically copied from dga-tools
 #
 FROM hashicorp/terraform:light
 

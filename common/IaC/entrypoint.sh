@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 #
-# WARNING: Automatically copied from dga-template
+# WARNING: Automatically copied from dga-tools
 #
 set -ex
 

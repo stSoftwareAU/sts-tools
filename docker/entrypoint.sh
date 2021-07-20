@@ -9,8 +9,7 @@ function setWS()
   fi
 
   if [[ ! -d "${WORKSPACE}/IaC" ]]; then
-    echo "Not A IaC workspace: ${WORKSPACE}"
-    exit 1
+    echo "WARNING: Not A IaC workspace: ${WORKSPACE}"
   fi
 
   export WORKSPACE
@@ -176,6 +175,10 @@ function doREPL()
 args=()
 MODE=""
 me=`basename "$0"`
+# if [[ $# == 0 ]]; then
+#   MODE="repl"
+# fi
+
 while [[ $# -gt 0 ]]; do
   key="$1"
 
@@ -199,6 +202,12 @@ export PATH="/home/tools:${PATH}"
 if [[ -z "${MODE}" ]]; then
   exec "${args[@]}"
 else
+
+  if [[ ! -d "${WORKSPACE}/IaC" ]]; then
+    echo "ERROR: Not A IaC workspace: ${WORKSPACE}"
+    exit 1
+  fi
+
   doInit
   doMode ${MODE} "${args[@]}"
 fi

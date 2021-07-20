@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# WARNING: Automatically copied from dga-template
+# WARNING: Automatically copied from dga-tools
 #
 set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
@@ -14,8 +14,8 @@ cp Dockerfile ${ws_dir}/
 cp entrypoint.sh  ${ws_dir}/
 cd ${ws_dir}
 
-if [[ -f pre-build.sh ]]; then
-    ./pre-build.sh
+if [[ -f "${ws_dir}/pre-build.sh" ]]; then
+    ${ws_dir}/pre-build.sh
 fi
 
 tf_dir=$(mktemp -d -t tf_XXXXXXXXXX)
