@@ -8,7 +8,7 @@ cd "${BASE_DIR}"
 
 if [[ -z "${WORKSPACE}" ]]; then
   WORKSPACE="${BASE_DIR}"
-fi 
+fi
 
 export WORKSPACE
 
@@ -27,7 +27,7 @@ if [[ -z "${ACCOUNT_ID}" ]]; then
   else
 
     tmpIdentity=$(mktemp /tmp/identity_XXXXXX.json)
-    
+
     curl -s http://169.254.169.254/latest/dynamic/instance-identity/document > ${tmpIdentity}||true
 
     if [[ -s ${tmpIdentity} ]]; then
@@ -58,6 +58,28 @@ if [[ -z "${AREA}" ]]; then
   fi
 fi
 
+tmpAliases=$(mktemp /tmp/aliases_XXXXXX.json)
+if [[ ! -z "${PROFILE}" ]]; then
+  aws iam --profile ${PROFILE} list-account-aliases > ${tmpAliases}
+else
+  aws iam list-account-aliases > ${tmpAliases}
+fi
+
+ACCOUNT_ALIAS=$(jq -r .AccountAliases[0] ${tmpAliases} | tr '[:upper:]' '[:lower]')
+
+if [[ ! ${ACCOUNT_ALIAS} =~ "${DEPARTMENT,,}".* ]]; then
+  echo "Wrong account (${ACCOUNT_ALIAS}) for department (${DEPARTMENT})"
+  exit 1
+fi
+
+if [[ ! ${ACCOUNT_ALIAS} =~ ^.*pipeline$ ]]; then
+  if [[ ! ${ACCOUNT_ALIAS} =~ ^.*"${AREA,,}"$ ]]; then
+    echo "Wrong AREA (${AREA}) for account (${ACCOUNT_ALIAS})"
+    exit 1
+  fi
+fi
+rm ${tmpAliases}
+export ACCOUNT_ALIAS
 export AREA
 
 echo "Initialize DEPARTMENT(${DEPARTMENT}), ACCOUNT_ID(${ACCOUNT_ID}), REGION(${REGION}) and AREA(${AREA})"
