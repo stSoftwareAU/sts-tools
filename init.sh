@@ -15,16 +15,25 @@ export WORKSPACE
 ENV_FILE="${WORKSPACE}/.env.properties"
 if [[ -f ${ENV_FILE} ]]; then
     source ${ENV_FILE}
+    export $(grep -v "#" ${ENV_FILE} |cut -d= -f1 )
 fi
 
 if [[ -z "${ACCOUNT_ID}" ]]; then
-  tmpIdentity=$(mktemp /tmp/identity_XXXXXX.json)
-  
-  curl -s http://169.254.169.254/latest/dynamic/instance-identity/document > ${tmpIdentity}||true
+  if [[ ! -z "${PROFILE}" ]]; then
+    tmpIdentity=$(mktemp /tmp/identity_XXXXXX.json)
+    aws sts --profile "${PROFILE}" get-caller-identity > ${tmpIdentity}
+    ACCOUNT_ID=$(jq -r .Account  ${tmpIdentity})
+    REGION=$(aws configure --profile "${PROFILE}" get region)
+  else
 
-  if [[ -s ${tmpIdentity} ]]; then
-    ACCOUNT_ID=$(jq -r .accountId  ${tmpIdentity})
-    REGION=$(jq -r .region  ${tmpIdentity})
+    tmpIdentity=$(mktemp /tmp/identity_XXXXXX.json)
+    
+    curl -s http://169.254.169.254/latest/dynamic/instance-identity/document > ${tmpIdentity}||true
+
+    if [[ -s ${tmpIdentity} ]]; then
+      ACCOUNT_ID=$(jq -r .accountId  ${tmpIdentity})
+      REGION=$(jq -r .region  ${tmpIdentity})
+    fi
   fi
 fi
 
@@ -42,7 +51,7 @@ if [[ -z "${AREA}" ]]; then
   tmpAREA=`git branch --show-current`
   cd "${BASE_DIR}"
 
-  if [[ "${tmpAREA}" =~ (Production|Staging) ]]; then
+  if [[ "${tmpAREA}" =~ (Production|Staging|Develop) ]]; then
     AREA="${tmpAREA}"
   else
     AREA="Scratch"

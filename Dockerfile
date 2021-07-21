@@ -17,6 +17,7 @@ WORKDIR /home/tools
 COPY init.sh .
 COPY docker/bashrc.sh .bashrc
 COPY release.sh .
+COPY create-bucket.sh .
 COPY push.sh .
 COPY common/IaC/ .
 

@@ -14,10 +14,6 @@ cp Dockerfile ${ws_dir}/
 cp entrypoint.sh  ${ws_dir}/
 cd ${ws_dir}
 
-if [[ -f "${ws_dir}/pre-build.sh" ]]; then
-    ${ws_dir}/pre-build.sh
-fi
-
 tf_dir=$(mktemp -d -t tf_XXXXXXXXXX)
 
 s3_tf="${S3_BUCKET}/${DOCKER_REPO}"
@@ -37,7 +33,15 @@ jq ".area=\"${AREA}\" | .region=\"${REGION}\" | .department=\"${DEPARTMENT}\"" $
 
 rm ${tmpVars}
 
+if [[ -f "${ws_dir}/pre-build.sh" ]]; then
+    ${ws_dir}/pre-build.sh
+fi
+
 docker build --tag ${DOCKER_REPO}:latest .
+
+if [[ -f "${ws_dir}/post-build.sh" ]]; then
+    ${ws_dir}/post-build.sh
+fi
 
 ## Clean up.
 rm -r ${tf_dir}
