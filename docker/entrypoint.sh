@@ -91,6 +91,9 @@ function doMode()
     deploy)
       doDeploy
       ;;
+    init)
+      doInit
+      ;;
     import)
       doImport $2 $3
       ;;
@@ -174,9 +177,6 @@ function doREPL()
 args=()
 MODE=""
 me=`basename "$0"`
-# if [[ $# == 0 ]]; then
-#   MODE="repl"
-# fi
 
 while [[ $# -gt 0 ]]; do
   key="$1"

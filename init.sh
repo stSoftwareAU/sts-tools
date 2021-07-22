@@ -67,19 +67,18 @@ else
 fi
 
 ACCOUNT_ALIAS=$(jq -r .AccountAliases[0] ${tmpAliases} | tr '[:upper:]' '[:lower]')
+rm ${tmpAliases}
 
 if [[ ! ${ACCOUNT_ALIAS} =~ "${DEPARTMENT,,}".* ]]; then
   echo "Wrong account (${ACCOUNT_ALIAS}) for department (${DEPARTMENT})"
   exit 1
 fi
 
-if [[ ! ${ACCOUNT_ALIAS} =~ ^.*pipeline$ ]]; then
-  if [[ ! ${ACCOUNT_ALIAS} =~ ^.*"${AREA,,}"$ ]]; then
-    echo "Wrong AREA (${AREA}) for account (${ACCOUNT_ALIAS})"
-    exit 1
-  fi
+if [[ ! ${ACCOUNT_ALIAS} =~ ^.*"${AREA,,}"$ ]]; then
+  echo "Wrong AREA (${AREA}) for account (${ACCOUNT_ALIAS})"
+  exit 1
 fi
-rm ${tmpAliases}
+
 export ACCOUNT_ALIAS
 export AREA
 
