@@ -83,7 +83,7 @@ rm ${tmpAliases}
 export ACCOUNT_ALIAS
 export AREA
 
-echo "Initialize DEPARTMENT(${DEPARTMENT}), ACCOUNT_ID(${ACCOUNT_ID}), REGION(${REGION}) and AREA(${AREA})"
+echo "Initialize DEPARTMENT(${DEPARTMENT}), ACCOUNT(${ACCOUNT_ALIAS}#${ACCOUNT_ID}), REGION(${REGION}) and AREA(${AREA})"
 
 export DEPARTMENT
 export ACCOUNT_ID

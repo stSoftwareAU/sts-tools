@@ -2,8 +2,6 @@
 
 FROM amazon/aws-cli:latest
 
-RUN cat /etc/passwd
-
 RUN yum install git jq -y && \
     amazon-linux-extras install docker && \
     useradd -u 1000 -d /home/tools tools && \
