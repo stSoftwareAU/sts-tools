@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 

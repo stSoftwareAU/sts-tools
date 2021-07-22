@@ -23,7 +23,8 @@ if [[ -z "${ACCOUNT_ID}" ]]; then
     tmpIdentity=$(mktemp /tmp/identity_XXXXXX.json)
     aws sts --profile "${PROFILE}" get-caller-identity > ${tmpIdentity}
     ACCOUNT_ID=$(jq -r .Account  ${tmpIdentity})
-    REGION=$(aws configure --profile "${PROFILE}" get region)
+    
+    REGION=$(aws configure --profile "${PROFILE}" get region)||true
   else
 
     tmpIdentity=$(mktemp /tmp/identity_XXXXXX.json)
@@ -105,6 +106,12 @@ if [[ ! -z "${DOCKER_ACCOUNT_ID}" ]]; then
   export DOCKER_ACCOUNT_ID
 fi
 
+if [[ -z "${ROLE}" ]]; then
+  if [[ ! -z "${PROFILE}" ]]; then
+    ROLE=$(aws sts --profile "${PROFILE}" get-caller-identity |jq -r .Arn|cut -d '/' -f 2)
+  fi
+fi 
+
 if [[ ! -z "${ROLE}" ]]; then
   ASSUME_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/${ROLE}"
 
@@ -121,13 +128,14 @@ if [[ ! -z "${ROLE}" ]]; then
   export AWS_SESSION_TOKEN=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken')
 fi
 
-export S3_BUCKET=`echo "${DEPARTMENT}-terraform-${AREA}-${REGION}"|tr "[:upper:]" "[:lower:]"`
+REAL_AREA=$(echo "${ACCOUNT_ALIAS}"| cut -d '-' -f 2)
+export S3_BUCKET=`echo "${DEPARTMENT}-terraform-${REAL_AREA}-${REGION}"|tr "[:upper:]" "[:lower:]"`
 LIST_BUCKETS=`aws s3api list-buckets`
 
 CreationDate=`jq ".Buckets[]|select(.Name==\"${S3_BUCKET}\").CreationDate" <<< "$LIST_BUCKETS"`
 if [[ -z "${CreationDate}" ]]; then
-    if [[ -s ./create-bucket.sh ]]; then
-      ./create-bucket.sh
+    if [[ -s  /home/tools/create-bucket.sh ]]; then
+      /home/tools/create-bucket.sh
     else
       echo "No bucket ${S3_BUCKET}"
       exit 1
