@@ -36,6 +36,16 @@ function doPull()
   ./pull.sh
 }
 
+function doPlan()
+{
+  ./plan.sh
+}
+
+function doDestroy()
+{
+  ./destroy.sh
+}
+
 function doPush()
 {
   ./push.sh
@@ -84,6 +94,12 @@ function doMode()
       ;;
     push)
       doPush
+      ;;
+    plan)
+      doPlan
+      ;;
+    destroy)
+      doDestroy
       ;;
     release)
       doRelease

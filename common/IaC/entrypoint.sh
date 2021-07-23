@@ -28,6 +28,15 @@ function doApply()
   doStore
 }
 
+function doPlan()
+{
+  doInit
+
+  terraform init -input=false
+  terraform validate
+  terraform plan -input=false -out=tf.plan
+}
+
 function doImport()
 {
   doInit
@@ -71,6 +80,9 @@ case "$mode" in
   apply)
     doApply
     ;;
+  plan)
+    doPlan
+    ;;    
   import)
     doImport $2 $3
     ;;    
