@@ -31,6 +31,8 @@ fi
 
 jq ".area=\"${AREA}\" | .region=\"${REGION}\" | .department=\"${DEPARTMENT}\"" ${tmpVars} > IaC/.auto.tfvars.json
 
+jq ".x=\"Y\" " <<< "{}" > IaC/.2.tfvars.json
+
 rm ${tmpVars}
 
 if [[ -f "${ws_dir}/pre-build.sh" ]]; then

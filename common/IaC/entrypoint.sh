@@ -51,7 +51,7 @@ function doDestroy()
 {
   doInit
   terraform init -input=false
-  terraform destroy -auto-approve -input=false 
+  terraform destroy -auto-approve -input=false
   doStore
 }
 
@@ -82,10 +82,10 @@ case "$mode" in
     ;;
   plan)
     doPlan
-    ;;    
+    ;;
   import)
     doImport $2 $3
-    ;;    
+    ;;
   destroy)
     doDestroy
     ;;

@@ -23,7 +23,7 @@ if [[ -z "${ACCOUNT_ID}" ]]; then
     tmpIdentity=$(mktemp /tmp/identity_XXXXXX.json)
     aws sts --profile "${PROFILE}" get-caller-identity > ${tmpIdentity}
     ACCOUNT_ID=$(jq -r .Account  ${tmpIdentity})
-    
+
     REGION=$(aws configure --profile "${PROFILE}" get region)||true
   else
 
@@ -109,7 +109,7 @@ if [[ -z "${ROLE}" ]]; then
   if [[ ! -z "${PROFILE}" ]]; then
     ROLE=$(aws sts --profile "${PROFILE}" get-caller-identity |jq -r .Arn|cut -d '/' -f 2)
   fi
-fi 
+fi
 
 if [[ ! -z "${ROLE}" ]]; then
   ASSUME_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/${ROLE}"

@@ -10,7 +10,6 @@ MODE=""
 me=`basename "$0"`
 while [[ $# -gt 0 ]]; do
   key="$1"
-  # ((pos+=1))
 
   case $key in
     -w|--workspace)
@@ -18,16 +17,6 @@ while [[ $# -gt 0 ]]; do
       TOOLS_WORKSPACE="$1"
       # shift
       ;;
-#    -r|--resource)
-#      shift # past argument
-#      IMPORT_RESOURCE="$1"
-#      shift
-#      ;;
-#    -i|--id)
-#      shift # past argument
-#      IMPORT_ID="$1"
-#      shift
-#      ;;      
     -m|--mode)
       shift # past argument
       MODE="$1"
@@ -43,7 +32,7 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-if [[ -z "${TOOLS_WORKSPACE}" ]]; then 
+if [[ -z "${TOOLS_WORKSPACE}" ]]; then
     echo "workspace not defined"
     exit 1
 fi
@@ -53,18 +42,29 @@ if [[ ! -d "${TOOLS_WORKSPACE}" ]]; then
     exit 1
 fi
 
-# . ./init.sh
 TOOLS_REPO="dga-tools"
+# $(id -u)
+mkdir -p "${HOME}/.tmp"
+aws_dir=$(mktemp -d  --tmpdir="${HOME}/.tmp" -t aws_XXXXXXXXXX )
 
+cp -a ${HOME}/.aws/* "${aws_dir}/"
+chmod ugo+rxw "${aws_dir}"
+chmod -R ugo+rw "${aws_dir}"
+set +e
 docker run \
     --dns 8.8.8.8 \
     --rm \
-    --user $(id -u):$(getent group docker|cut -d ':' -f 3)\
+    --user 1000:$(getent group docker|cut -d ':' -f 3)\
     --interactive \
     --tty \
     --volume /var/run/docker.sock:/var/run/docker.sock \
     --volume ${TOOLS_WORKSPACE}:/home/workspace \
-    --volume ${HOME}/.aws:/home/tools/.aws \
+    --volume ${aws_dir}:/home/tools/.aws \
     --volume /tmp:/tmp \
     ${TOOLS_REPO}:latest \
     "${args[@]}"
+
+ERROR=$?
+rm -rf ${aws_dir}
+
+exit ${ERROR}
