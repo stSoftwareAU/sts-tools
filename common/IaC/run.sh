@@ -6,6 +6,10 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
+MODE="apply"
+if [[ $# -gt 0 ]]; then
+  MODE=$1
+fi
 . ./init.sh
 
 tf_dir=$(mktemp -d -t tf_XXXXXXXXXX)
@@ -15,7 +19,14 @@ s3_tf="${S3_BUCKET}/${DOCKER_REPO}"
 
 aws s3 cp s3://${s3_tf} ${tf_dir} --recursive
 
-aws appconfig get-configuration --application ${DOCKER_REPO} --environment ${AREA} --configuration config --client-id any-id ${tmpConfig}/.config.auto.tfvars.json ||true
+tmpApps=$(mktemp -t apps_XXXXXXXXXX)
+aws appconfig list-applications > ${tmpApps}
+
+APP=$(jq ".Items[]|select( .Name==\"${DOCKER_REPO}\" )" ${tmpApps})
+rm ${tmpApps}
+if [[ ! -z "${APP}" ]]; then
+    aws appconfig get-configuration --application ${DOCKER_REPO} --environment ${AREA,,} --configuration config --client-id any-id ${tmpConfig}/.config.auto.tfvars.json
+fi 
 
 mkdir -p ${tf_dir}/store
 chmod -R ugo+rw ${tf_dir}
@@ -33,7 +44,7 @@ docker run \
     --volume ${tf_dir}/store:/home/IaC/store \
     --volume ${tmpConfig}:/home/IaC/.config \
     ${DOCKER_REPO}:latest \
-    apply
+    ${MODE}
 
 rm -rf ${tmpConfig}
 
