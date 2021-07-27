@@ -66,11 +66,6 @@ function doRelease()
   ./release.sh
 }
 
-function doReformat()
-{
-  ./reformat.sh
-}
-
 function doMode()
 {
   mode=$1

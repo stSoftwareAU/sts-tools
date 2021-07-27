@@ -9,6 +9,9 @@ function doInit()
   if test -f "store/terraform.tfstate"; then
       cp store/*.tfstate .
   fi
+  if test -f ".config/.config.auto.tfvars.json"; then
+      cp .config/.config.auto.tfvars.json .
+  fi
 }
 
 function doStore()
@@ -88,6 +91,9 @@ case "$mode" in
     ;;
   destroy)
     doDestroy
+    ;;
+  reformat)
+    doReformat
     ;;
   *)
     echo "${mode}: Unknown mode"

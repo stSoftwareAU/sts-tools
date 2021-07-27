@@ -21,25 +21,13 @@ s3_tf="${S3_BUCKET}/${DOCKER_REPO}"
 aws s3 cp s3://${s3_tf} ${tf_dir} --recursive
 chmod -R ugo+rw ${tf_dir}
 
-tmpVars=$(mktemp vars_XXXXXX.json)
-
-if [[ -s ${tf_dir}/config.json ]]; then
-    jq ".tfvars//{}" ${tf_dir}/config.json > ${tmpVars}
-else
-    echo "{}" > ${tmpVars}
-fi
-
-jq ".area=\"${AREA}\" | .region=\"${REGION}\" | .department=\"${DEPARTMENT}\"" ${tmpVars} > IaC/.auto.tfvars.json
-
-jq ".x=\"Y\" " <<< "{}" > IaC/.2.tfvars.json
-
-rm ${tmpVars}
+jq ".area=\"${AREA}\" | .region=\"${REGION}\" | .department=\"${DEPARTMENT}\"" <<<"{}" > IaC/.auto.tfvars.json
 
 if [[ -f "${ws_dir}/pre-build.sh" ]]; then
     ${ws_dir}/pre-build.sh
 fi
 
-docker build --tag ${DOCKER_REPO}:latest .
+docker build --quiet --tag ${DOCKER_REPO}:latest .
 
 if [[ -f "${ws_dir}/post-build.sh" ]]; then
     ${ws_dir}/post-build.sh

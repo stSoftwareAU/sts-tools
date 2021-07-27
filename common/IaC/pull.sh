@@ -28,5 +28,5 @@ if [[ -z "${DOCKER_TAG}" ]]; then
 fi
 
 DOCKER_URI="${ECR}/${DOCKER_REPO}"
-docker pull ${DOCKER_URI}:${DOCKER_TAG}
+docker pull --quiet ${DOCKER_URI}:${DOCKER_TAG}
 docker tag ${DOCKER_URI}:${DOCKER_TAG} ${DOCKER_REPO}:latest

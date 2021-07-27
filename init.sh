@@ -52,11 +52,11 @@ if [[ -z "${AREA}" ]]; then
   tmpAREA=`git branch --show-current`
   cd "${BASE_DIR}"
 
-  if [[ "${tmpAREA}" =~ (Production|Staging|Develop) ]]; then
+  # if [[ "${tmpAREA}" =~ (Production|Staging|Develop) ]]; then
     AREA="${tmpAREA}"
-  else
-    AREA="Scratch"
-  fi
+  # else
+  #   AREA="Scratch"
+  # fi
 fi
 
 tmpAliases=$(mktemp /tmp/aliases_XXXXXX.json)
