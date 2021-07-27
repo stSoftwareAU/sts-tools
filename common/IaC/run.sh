@@ -6,10 +6,30 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
-MODE="apply"
-if [[ $# -gt 0 ]]; then
-  MODE=$1
+MODE=""
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    -m|--mode)
+      shift # past argument
+      MODE="$1"
+      # shift
+      ;;
+    *)
+      echo "${key}: Unknown argument"
+      exit 5
+      ;;
+  esac
+
+  shift
+done
+
+if [[ -z "${MODE}" ]]; then
+    echo "MODE not defined"
+    exit 1
 fi
+
 . ./init.sh
 
 tf_dir=$(mktemp -d -t tf_XXXXXXXXXX)

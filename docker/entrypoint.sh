@@ -43,7 +43,7 @@ function doPlan()
 
 function doDestroy()
 {
-  ./destroy.sh
+  ./run.sh --mode destroy
 }
 
 function doPush()
@@ -51,9 +51,10 @@ function doPush()
   ./push.sh
 }
 
-function doDeploy()
+function doApply()
 {
-  ./deploy.sh
+  ./build.sh
+  ./run.sh --mode apply
 }
 
 function doImport()
@@ -99,8 +100,8 @@ function doMode()
     release)
       doRelease
       ;;
-    deploy)
-      doDeploy
+    apply)
+      doApply
       ;;
     init)
       doInit
