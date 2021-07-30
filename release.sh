@@ -11,21 +11,24 @@ fi
 . ./init.sh
 
 EXT=`date "+%Y%m%d%H%M%S"`
-TAG=`echo "${AREA}" | tr '[:upper:]' '[:lower:]'`
+# TAG=`echo "${AREA}" | tr '[:upper:]' '[:lower:]'`
 ECR="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
 aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR}
 
-DOCKER_URI="${ECR}/${DOCKER_REPO}"
+# DOCKER_URI="${ECR}/${DOCKER_REPO}"
 
-docker pull ${DOCKER_URI}:${GIT_COMMIT}
+aws ecr describe-repositories --repository-names ${AREA,,}/${DOCKER_REPO} || \
+    aws ecr create-repository --image-scanning-configuration scanOnPush=true --repository-name ${AREA,,}/${DOCKER_REPO}
 
-docker tag ${DOCKER_URI}:${GIT_COMMIT} \
-           ${DOCKER_URI}:${TAG}_${EXT}
+docker pull ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}
 
-docker push ${DOCKER_URI}:${TAG}_${EXT}
+docker tag ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT} \
+           ${ECR}/${AREA,,}/${DOCKER_REPO}:released_${EXT}
 
-docker tag ${DOCKER_URI}:${GIT_COMMIT} \
-           ${DOCKER_URI}:${TAG}
+docker push ${ECR}/${AREA,,}/${DOCKER_REPO}:released_${EXT}
 
-docker push ${DOCKER_URI}:${TAG}
+docker tag ${ECR}/${AREA,,}/${DOCKER_REPO}:released_${EXT} \
+           ${ECR}/${AREA,,}/${DOCKER_REPO}:latest
+
+docker push ${ECR}/${AREA,,}/${DOCKER_REPO}:latest

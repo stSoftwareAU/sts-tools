@@ -120,11 +120,13 @@ function listChoices()
 {
   clear
 
-  if [[ "${AREA}" =~ ^[pP]rod(|uction)$ ]]; then
-    COLOR="\e[5m\e[35m"
-  elif [[ "${AREA}" =~ ^[sS]tag(|ing)$ ]]; then
+  if [[ "${AREA}" =~ ^[pP]roduction$ ]]; then
+    COLOR="\e[5m\e[31m"
+  elif [[ "${AREA}" =~ ^[sS]taging$ ]]; then
     COLOR="\e[5m\e[34m"
-  elif [[ "${AREA}" =~ ^[sS]cratch$ ]]; then
+  elif [[ "${AREA}" =~ ^[Pp]ipeline$ ]]; then
+    COLOR="\e[5m\e[35m"
+  elif [[ "${AREA}" =~ ^[dD]evelop$ ]]; then
     COLOR="\e[5m\e[32m"
   else
     COLOR="\e[5m\e[41m"

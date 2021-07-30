@@ -17,9 +17,10 @@ ECR="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
 aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR}
 
-aws ecr describe-repositories --repository-names ${DOCKER_REPO} || \
-    aws ecr create-repository --image-scanning-configuration scanOnPush=true --repository-name ${DOCKER_REPO}
+aws ecr describe-repositories --repository-names temp-${AREA,,}/${DOCKER_REPO} || \
+    aws ecr create-repository --image-scanning-configuration scanOnPush=true --repository-name temp-${AREA,,}/${DOCKER_REPO}
 
-DOCKER_URI="${ECR}/${DOCKER_REPO}"
-docker tag ${DOCKER_REPO}:latest ${DOCKER_URI}:${GIT_COMMIT}
-docker push ${DOCKER_URI}:${GIT_COMMIT}
+docker tag ${DOCKER_REPO}:latest ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}
+docker push ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}
+
+docker push ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}
