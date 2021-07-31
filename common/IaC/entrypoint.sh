@@ -23,9 +23,9 @@ function doApply()
 {
   doInit
 
-  terraform init -input=false
-  terraform validate
-  terraform plan -input=false -out=tf.plan
+  terraform init ${NO_COLOR_ARG} -input=false
+  terraform validate ${NO_COLOR_ARG}
+  terraform plan ${NO_COLOR_ARG} -input=false -out=tf.plan
   terraform apply -auto-approve ${NO_COLOR_ARG} -input=false tf.plan
 
   doStore

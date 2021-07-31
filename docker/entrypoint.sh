@@ -59,6 +59,7 @@ function doApply()
 
 function doImport()
 {
+  ./build.sh
   ./import.sh $1 $2
 }
 

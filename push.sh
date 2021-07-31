@@ -21,6 +21,4 @@ aws ecr describe-repositories --repository-names temp-${AREA,,}/${DOCKER_REPO} |
     aws ecr create-repository --image-scanning-configuration scanOnPush=true --repository-name temp-${AREA,,}/${DOCKER_REPO}
 
 docker tag ${DOCKER_REPO}:latest ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}
-docker push ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}
-
-docker push ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}
+docker push --quiet ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}
