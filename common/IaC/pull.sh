@@ -18,11 +18,11 @@ aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR}
 
 if [[ ! -z "${GIT_COMMIT}" ]]; then
   DOCKER_TAG="${GIT_COMMIT}"
-    
+
   docker pull --quiet ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}
   docker tag ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT} ${DOCKER_REPO}:latest
 else
   DOCKER_URI="${ECR}/${DOCKER_REPO}"
-  docker pull --quiet ${ECR}/${AREA,,}/${DOCKER_REPO}:lastest
-  docker tag ${ECR}/${AREA,,}/${DOCKER_REPO}:lastest ${DOCKER_REPO}:latest
+  docker pull --quiet ${ECR}/${AREA,,}/${DOCKER_REPO}:latest
+  docker tag ${ECR}/${AREA,,}/${DOCKER_REPO}:latest ${DOCKER_REPO}:latest
 fi
