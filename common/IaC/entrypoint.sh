@@ -26,7 +26,7 @@ function doApply()
   terraform init -input=false
   terraform validate
   terraform plan -input=false -out=tf.plan
-  terraform apply -auto-approve -no-color -input=false tf.plan
+  terraform apply -auto-approve ${NO_COLOR_ARG} -input=false tf.plan
 
   doStore
 }
@@ -79,6 +79,10 @@ mode=$1
 case "$mode" in
   shell)
     doShell
+    ;;
+  apply-no-color)
+    NO_COLOR_ARG="-no-color"
+    doApply
     ;;
   apply)
     doApply
