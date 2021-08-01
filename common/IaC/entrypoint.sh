@@ -40,12 +40,24 @@ function doPlan()
   terraform plan -input=false -out=tf.plan
 }
 
+function doState()
+{
+  doInit
+
+  terraform init -input=false
+  terraform validate
+
+  terraform state $1 $2
+  doStore
+}
+
 function doImport()
 {
   doInit
 
   terraform init -input=false
   terraform validate
+
   terraform import $1 $2
   doStore
 }
@@ -76,7 +88,7 @@ fi
 
 mode=$1
 
-case "$mode" in
+case "${mode}" in
   shell)
     doShell
     ;;
@@ -89,6 +101,9 @@ case "$mode" in
     ;;
   plan)
     doPlan
+    ;;
+  state)
+    doState $2 $3
     ;;
   import)
     doImport $2 $3

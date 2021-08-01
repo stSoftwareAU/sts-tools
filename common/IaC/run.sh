@@ -14,7 +14,6 @@ while [[ $# -gt 0 ]]; do
     -m|--mode)
       shift # past argument
       MODE="$1"
-      # shift
       ;;
     *)
       echo "${key}: Unknown argument"
@@ -46,10 +45,10 @@ APP=$(jq ".Items[]|select( .Name==\"${DOCKER_REPO}\" )" ${tmpApps})
 rm ${tmpApps}
 if [[ ! -z "${APP}" ]]; then
     aws appconfig get-configuration --application ${DOCKER_REPO} --environment ${AREA,,} --configuration config --client-id any-id ${tmpConfig}/.config.auto.tfvars.json
-fi 
+fi
 
-mkdir -p ${tf_dir}/store
-chmod -R ugo+rw ${tf_dir}
+mkdir -p "${tf_dir}/store"
+chmod -R ugo+rw "${tf_dir}"
 
 chmod ugo+rxw "${tmpConfig}"
 chmod -R ugo+rw "${tmpConfig}"

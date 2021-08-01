@@ -57,6 +57,12 @@ function doApply()
   ./run.sh --mode apply
 }
 
+function doState()
+{
+  ./build.sh
+  ./state.sh $1 $2
+}
+
 function doImport()
 {
   ./build.sh
@@ -76,7 +82,7 @@ function doMode()
     exit 1
   fi
 
-  case "$mode" in
+  case "${mode}" in
     shell)
       doShell
       ;;
@@ -106,6 +112,9 @@ function doMode()
       ;;
     init)
       doInit
+      ;;
+    state)
+      doState $2 $3
       ;;
     import)
       doImport $2 $3
