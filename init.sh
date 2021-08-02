@@ -58,11 +58,15 @@ if [[ -z "${DEPARTMENT}" ]] || [[ -z "${ACCOUNT_ID}" ]] || [[ -z "${REGION}" ]];
 fi
 
 if [[ -z "${AREA}" ]]; then
-  cd "${WORKSPACE}"
-  tmpAREA=`git branch --show-current`
-  cd "${BASE_DIR}"
+  if [[ ! -z "${BRANCH_NAME}" ]]; then
+    AREA="${BRANCH_NAME}"
+  else
+    cd "${WORKSPACE}"
+    tmpAREA=`git branch --show-current`
+    cd "${BASE_DIR}"
 
-  AREA="${tmpAREA}"
+    AREA="${tmpAREA}"
+  fi
 fi
 
 tmpAliases=$(mktemp /tmp/aliases_XXXXXX.json)
@@ -80,9 +84,11 @@ if [[ ! ${ACCOUNT_ALIAS} =~ "${DEPARTMENT,,}".* ]]; then
   exit 1
 fi
 
-if [[ ! ${ACCOUNT_ALIAS} =~ ^.*"${AREA,,}"$ ]]; then
-  echo "Wrong AREA (${AREA}) for account (${ACCOUNT_ALIAS})"
-  exit 1
+if [[ ! ${ACCOUNT_ALIAS} =~ ^.*"-pipeline"$ ]]; then
+  if [[ ! ${ACCOUNT_ALIAS} =~ ^.*"${AREA,,}"$ ]]; then
+    echo "Wrong AREA (${AREA}) for account (${ACCOUNT_ALIAS})"
+    exit 1
+  fi
 fi
 
 export ACCOUNT_ALIAS
