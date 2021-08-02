@@ -42,20 +42,30 @@ if [[ -z "${REGION}" ]]; then
   REGION="${AWS_DEFAULT_REGION}"
 fi
 
+if [[ -z "${GIT_REPO}" ]]; then
+  cd "${WORKSPACE}"
+  GIT_REPO=$(basename -s .git `git config --get remote.origin.url`)
+  cd "${BASE_DIR}"
+fi
+
+if [[ -z "${DEPARTMENT}" ]]; then 
+  DEPARTMENT=$(echo ${GIT_REPO^^}| cut -d '-' -f 1)
+fi 
+
 if [[ -z "${DEPARTMENT}" ]] || [[ -z "${ACCOUNT_ID}" ]] || [[ -z "${REGION}" ]]; then
   echo "Must specify the follow environment variables DEPARTMENT(${DEPARTMENT}), ACCOUNT_ID(${ACCOUNT_ID}) and REGION(${REGION})"
   exit 1
 fi
 
 if [[ -z "${AREA}" ]]; then
-  cd "${WORKSPACE}"
-  tmpAREA=`git branch --show-current`
-  cd "${BASE_DIR}"
-
-  if [[ "${tmpAREA}" =~ (Production|Staging|Develop) ]]; then
-    AREA="${tmpAREA}"
+  if [[ ! -z "${BRANCH_NAME}" ]]; then
+    AREA="${BRANCH_NAME}"
   else
-    AREA="Scratch"
+    cd "${WORKSPACE}"
+    tmpAREA=`git branch --show-current`
+    cd "${BASE_DIR}"
+
+    AREA="${tmpAREA}"
   fi
 fi
 
@@ -74,9 +84,11 @@ if [[ ! ${ACCOUNT_ALIAS} =~ "${DEPARTMENT,,}".* ]]; then
   exit 1
 fi
 
-if [[ ! ${ACCOUNT_ALIAS} =~ ^.*"${AREA,,}"$ ]]; then
-  echo "Wrong AREA (${AREA}) for account (${ACCOUNT_ALIAS})"
-  exit 1
+if [[ ! ${ACCOUNT_ALIAS} =~ ^.*"-pipeline"$ ]]; then
+  if [[ ! ${ACCOUNT_ALIAS} =~ ^.*"${AREA,,}"$ ]]; then
+    echo "Wrong AREA (${AREA}) for account (${ACCOUNT_ALIAS})"
+    exit 1
+  fi
 fi
 
 export ACCOUNT_ALIAS
@@ -90,13 +102,7 @@ export REGION="${REGION}"
 export AWS_DEFAULT_REGION="${REGION}"
 
 if [[ -z "${DOCKER_REPO}" ]]; then
-  if [[ -z "${GIT_REPO}" ]]; then
-    cd "${WORKSPACE}"
-    GIT_REPO=$(basename -s .git `git config --get remote.origin.url`)
-    cd "${BASE_DIR}"
-  fi
-
-  DOCKER_REPO=`tr "[:upper:]" "[:lower:]" <<< "${GIT_REPO}"`
+  DOCKER_REPO="${GIT_REPO,,}"
 fi
 
 export DOCKER_REPO

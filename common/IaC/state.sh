@@ -50,7 +50,7 @@ docker run \
     --volume ${tf_dir}/store:/home/IaC/store \
     --volume ${tmpConfig}:/home/IaC/.config \
     ${DOCKER_REPO}:latest \
-    import $1 $2
+    state $1 $2
 
 aws s3 cp ${tf_dir}/store s3://${s3_tf}/store --recursive
 

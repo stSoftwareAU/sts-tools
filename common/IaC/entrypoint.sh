@@ -2,12 +2,15 @@
 #
 # WARNING: Automatically copied from dga-tools
 #
-set -ex
+set -e
 
 function doInit()
 {
   if test -f "store/terraform.tfstate"; then
       cp store/*.tfstate .
+  fi
+  if test -f ".config/.config.auto.tfvars.json"; then
+      cp .config/.config.auto.tfvars.json .
   fi
 }
 
@@ -20,10 +23,10 @@ function doApply()
 {
   doInit
 
-  terraform init -input=false
-  terraform validate
-  terraform plan -input=false -out=tf.plan
-  terraform apply -auto-approve -input=false tf.plan
+  terraform init ${NO_COLOR_ARG} -input=false
+  terraform validate ${NO_COLOR_ARG}
+  terraform plan ${NO_COLOR_ARG} -input=false -out=tf.plan
+  terraform apply -auto-approve ${NO_COLOR_ARG} -input=false tf.plan
 
   doStore
 }
@@ -37,12 +40,24 @@ function doPlan()
   terraform plan -input=false -out=tf.plan
 }
 
+function doState()
+{
+  doInit
+
+  terraform init -input=false
+  terraform validate
+
+  terraform state $1 $2
+  doStore
+}
+
 function doImport()
 {
   doInit
 
   terraform init -input=false
   terraform validate
+
   terraform import $1 $2
   doStore
 }
@@ -73,9 +88,13 @@ fi
 
 mode=$1
 
-case "$mode" in
+case "${mode}" in
   shell)
     doShell
+    ;;
+  apply-no-color)
+    NO_COLOR_ARG="-no-color"
+    doApply
     ;;
   apply)
     doApply
@@ -83,11 +102,17 @@ case "$mode" in
   plan)
     doPlan
     ;;
+  state)
+    doState $2 $3
+    ;;
   import)
     doImport $2 $3
     ;;
   destroy)
     doDestroy
+    ;;
+  reformat)
+    doReformat
     ;;
   *)
     echo "${mode}: Unknown mode"

@@ -43,7 +43,7 @@ function doPlan()
 
 function doDestroy()
 {
-  ./destroy.sh
+  ./run.sh --mode destroy
 }
 
 function doPush()
@@ -51,24 +51,27 @@ function doPush()
   ./push.sh
 }
 
-function doDeploy()
+function doApply()
 {
-  ./deploy.sh
+  ./build.sh
+  ./run.sh --mode apply
+}
+
+function doState()
+{
+  ./build.sh
+  ./state.sh $1 $2
 }
 
 function doImport()
 {
+  ./build.sh
   ./import.sh $1 $2
 }
 
 function doRelease()
 {
   ./release.sh
-}
-
-function doReformat()
-{
-  ./reformat.sh
 }
 
 function doMode()
@@ -79,7 +82,7 @@ function doMode()
     exit 1
   fi
 
-  case "$mode" in
+  case "${mode}" in
     shell)
       doShell
       ;;
@@ -104,11 +107,14 @@ function doMode()
     release)
       doRelease
       ;;
-    deploy)
-      doDeploy
+    apply)
+      doApply
       ;;
     init)
       doInit
+      ;;
+    state)
+      doState $2 $3
       ;;
     import)
       doImport $2 $3
@@ -124,11 +130,13 @@ function listChoices()
 {
   clear
 
-  if [[ "${AREA}" =~ ^[pP]rod(|uction)$ ]]; then
-    COLOR="\e[5m\e[35m"
-  elif [[ "${AREA}" =~ ^[sS]tag(|ing)$ ]]; then
+  if [[ "${AREA}" =~ ^[pP]roduction$ ]]; then
+    COLOR="\e[5m\e[31m"
+  elif [[ "${AREA}" =~ ^[sS]taging$ ]]; then
     COLOR="\e[5m\e[34m"
-  elif [[ "${AREA}" =~ ^[sS]cratch$ ]]; then
+  elif [[ "${AREA}" =~ ^[Pp]ipeline$ ]]; then
+    COLOR="\e[5m\e[35m"
+  elif [[ "${AREA}" =~ ^[dD]evelop$ ]]; then
     COLOR="\e[5m\e[32m"
   else
     COLOR="\e[5m\e[41m"
