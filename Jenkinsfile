@@ -25,10 +25,6 @@ pipeline {
                 sh """\
                 #!/bin/bash
                 set -e
-                pwd
-                ls -la 
-                env
-                bash -x ./init.sh
 
                 ./build.sh
                 ./push.sh

@@ -10,11 +10,6 @@ fi
 
 . ./init.sh
 
-if [[ ! ${ACCOUNT_ALIAS} =~ ^.*"${AREA,,}"$ ]]; then
-  echo "Wrong AREA (${AREA}) for account (${ACCOUNT_ALIAS})"
-  exit 1
-fi
-
 EXT=`date "+%Y%m%d%H%M%S"`
 
 ECR="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"

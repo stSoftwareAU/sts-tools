@@ -7,6 +7,12 @@ BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
 . ./init.sh
+
+if [[ ! ${ACCOUNT_ALIAS} =~ ^.*"${AREA,,}"$ ]]; then
+  echo "Wrong AREA (${AREA}) for account (${ACCOUNT_ALIAS})"
+  exit 1
+fi
+
 ws_dir=$(mktemp -d -t ws_XXXXXXXXXX)
 cp -a ${WORKSPACE}/* ${ws_dir}/
 
