@@ -21,7 +21,7 @@ s3_tf="${S3_BUCKET}/${DOCKER_REPO}"
 aws s3 cp s3://${s3_tf} ${tf_dir} --recursive
 chmod -R ugo+rw ${tf_dir}
 
-jq ".area=\"${AREA}\" | .region=\"${REGION}\" | .department=\"${DEPARTMENT}\"" <<<"{}" > IaC/.auto.tfvars.json
+jq ".area=\"${AREA}\" | .region=\"${REGION}\" | .department=\"${DEPARTMENT}\"| .package=\"${PACKAGE}\"" <<<"{}" > IaC/.auto.tfvars.json
 
 if [[ -f "${ws_dir}/pre-build.sh" ]]; then
     ${ws_dir}/pre-build.sh
