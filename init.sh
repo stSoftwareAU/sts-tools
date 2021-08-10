@@ -48,9 +48,15 @@ if [[ -z "${GIT_REPO}" ]]; then
   cd "${BASE_DIR}"
 fi
 
-if [[ -z "${DEPARTMENT}" ]]; then 
+if [[ -z "${DEPARTMENT}" ]]; then
   DEPARTMENT=$(echo ${GIT_REPO^^}| cut -d '-' -f 1)
-fi 
+fi
+
+if [[ -z "${PACKAGE}" ]]; then
+  let offset=${#DEPARTMENT}+1
+  PACKAGE="${GIT_REPO:${offset}}"
+fi
+export PACKAGE
 
 if [[ -z "${DEPARTMENT}" ]] || [[ -z "${ACCOUNT_ID}" ]] || [[ -z "${REGION}" ]]; then
   echo "Must specify the follow environment variables DEPARTMENT(${DEPARTMENT}), ACCOUNT_ID(${ACCOUNT_ID}) and REGION(${REGION})"
