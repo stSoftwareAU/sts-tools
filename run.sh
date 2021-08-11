@@ -6,7 +6,7 @@ cd "${BASE_DIR}"
 TOOLS_WORKSPACE="${WORKSPACE}"
 args=()
 MODE=""
-
+REQUIRED_VERSION="2.0"
 me=`basename "$0"`
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -15,6 +15,11 @@ while [[ $# -gt 0 ]]; do
     -w|--workspace)
       shift # past argument
       TOOLS_WORKSPACE="$1"
+      # shift
+      ;;
+    -r|--require)
+      shift # past argument
+      REQUIRED_VERSION="$1"
       # shift
       ;;
     -m|--mode)
@@ -56,6 +61,7 @@ docker run \
     --dns 8.8.8.8 \
     --rm \
     --env WHO=$(whoami) \
+    --env REQUIRED_VERSION="${REQUIRED_VERSION}" \
     --user 1000:$(getent group docker|cut -d ':' -f 3)\
     --interactive \
     --tty \
