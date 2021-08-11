@@ -6,6 +6,57 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
+export TOOLS_VERSION="2.0"
+
+function compareVersion () {
+    if [[ $1 == $2 ]]
+    then
+      RESULT=0
+      return;
+    fi
+    local IFS=.
+    local i ver1=($1) ver2=($2)
+    # fill empty fields in ver1 with zeros
+    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
+    do
+        ver1[i]=0
+    done
+    for ((i=0; i<${#ver1[@]}; i++))
+    do
+        if [[ -z ${ver2[i]} ]]
+        then
+            # fill empty fields in ver2 with zeros
+            ver2[i]=0
+        fi
+        if ((10#${ver1[i]} > 10#${ver2[i]}))
+        then
+            RESULT=1
+            return
+        fi
+        if ((10#${ver1[i]} < 10#${ver2[i]}))
+        then
+          RESULT=-1
+          return
+        fi
+    done
+
+    RESULT=0
+    return
+}
+
+function checkVersion(){
+
+  compareVersion ${REQUIRED_VERSION:-${TOOLS_VERSION}} ${TOOLS_VERSION}
+  # compareVersion ${REQUIRED_VERSION:-1} ${VERSION}
+
+  if [[ ${RESULT} > 0 ]]; then
+    echo "FAIL: Required VERSION ${REQUIRED_VERSION}, was ${TOOLS_VERSION}"
+    exit 1
+  fi
+}
+
+checkVersion
+
 if [[ "${INITIALIZED}" == "YES" ]]; then
   return
 fi 
@@ -104,7 +155,7 @@ fi
 export ACCOUNT_ALIAS
 export AREA
 
-echo "Initialize DEPARTMENT(${DEPARTMENT}), ACCOUNT(${ACCOUNT_ALIAS}#${ACCOUNT_ID}), REGION(${REGION}) and AREA(${AREA}) for PACKAGE(${PACKAGE})"
+echo "Initialize DEPARTMENT(${DEPARTMENT}), ACCOUNT(${ACCOUNT_ALIAS}#${ACCOUNT_ID}), REGION(${REGION}) and AREA(${AREA}) for PACKAGE(${PACKAGE}) v${TOOLS_VERSION}"
 
 export DEPARTMENT
 export ACCOUNT_ID
