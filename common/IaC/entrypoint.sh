@@ -39,6 +39,14 @@ function doPlan()
   terraform plan -input=false -out=tf.plan
 }
 
+function doValidate()
+{
+  doInit
+
+  terraform init -input=false
+  terraform validate
+}
+
 function doState()
 {
   doInit
@@ -113,6 +121,9 @@ case "${mode}" in
   reformat)
     doReformat
     ;;
+    validate)
+      doValidate
+      ;;
   *)
     echo "${mode}: Unknown mode"
     exit 5
