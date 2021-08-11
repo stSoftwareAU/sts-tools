@@ -15,6 +15,11 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       MODE="$1"
       ;;
+    -r|--require)
+      shift # past argument
+      REQUIRED_VERSION="$1"
+      # shift
+      ;;      
     *)
       echo "${key}: Unknown argument"
       exit 5
@@ -27,6 +32,10 @@ done
 if [[ -z "${MODE}" ]]; then
     echo "MODE not defined"
     exit 1
+fi
+
+if [[ -z "${WHO}" ]]; then
+    WHO=$(whoami)
 fi
 
 . ./init.sh
@@ -65,6 +74,8 @@ chmod -R ugo+rw "${tmpConfig}"
 docker run \
     --dns 8.8.8.8 \
     --rm \
+    --env REQUIRED_VERSION="${REQUIRED_VERSION}" \
+    --env WHO="${WHO}" \
     --env AWS_ACCESS_KEY_ID \
     --env AWS_SECRET_ACCESS_KEY \
     --env AWS_SESSION_TOKEN \

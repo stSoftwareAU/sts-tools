@@ -6,7 +6,7 @@ cd "${BASE_DIR}"
 TOOLS_WORKSPACE="${WORKSPACE}"
 args=()
 MODE=""
-REQUIRED_VERSION="2.0"
+
 me=`basename "$0"`
 while [[ $# -gt 0 ]]; do
   key="$1"
