@@ -10,7 +10,7 @@ function doInit()
       cp store/*.tfstate .
   fi
 
-  cp .config/*.auto.tfvars.json .
+  cp .config/*.auto.tfvars.json . || true
 }
 
 function doStore()
