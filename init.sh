@@ -6,6 +6,10 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
+if [[ "${INITIALIZED}" == "YES" ]]; then
+  return
+fi 
+
 if [[ -z "${WORKSPACE}" ]]; then
   WORKSPACE="${BASE_DIR}"
 fi
@@ -100,7 +104,7 @@ fi
 export ACCOUNT_ALIAS
 export AREA
 
-echo "Initialize DEPARTMENT(${DEPARTMENT}), ACCOUNT(${ACCOUNT_ALIAS}#${ACCOUNT_ID}), REGION(${REGION}) and AREA(${AREA})"
+echo "Initialize DEPARTMENT(${DEPARTMENT}), ACCOUNT(${ACCOUNT_ALIAS}#${ACCOUNT_ID}), REGION(${REGION}) and AREA(${AREA}) for PACKAGE(${PACKAGE})"
 
 export DEPARTMENT
 export ACCOUNT_ID
@@ -152,3 +156,4 @@ if [[ -z "${CreationDate}" ]]; then
       exit 1
     fi
 fi
+export INITIALIZED="YES"

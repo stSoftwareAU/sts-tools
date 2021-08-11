@@ -31,7 +31,7 @@ aws appconfig list-applications > ${tmpApps}
 APP=$(jq ".Items[]|select( .Name==\"${DOCKER_REPO}\" )" ${tmpApps})
 rm ${tmpApps}
 if [[ ! -z "${APP}" ]]; then
-    aws appconfig get-configuration --application ${DOCKER_REPO} --environment ${AREA,,} --configuration config --client-id any-id ${tmpConfig}/.config.auto.tfvars.json
+    aws appconfig get-configuration --application ${DOCKER_REPO} --environment ${AREA,,} --configuration config --client-id any-id ${tmpConfig}/config.auto.tfvars.json
 fi
 
 mkdir -p "${tf_dir}/store"

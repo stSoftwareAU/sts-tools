@@ -9,9 +9,8 @@ function doInit()
   if test -f "store/terraform.tfstate"; then
       cp store/*.tfstate .
   fi
-  if test -f ".config/.config.auto.tfvars.json"; then
-      cp .config/.config.auto.tfvars.json .
-  fi
+
+  cp .config/*.auto.tfvars.json .
 }
 
 function doStore()

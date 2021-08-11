@@ -43,17 +43,19 @@ if [[ ! -d "${TOOLS_WORKSPACE}" ]]; then
 fi
 
 TOOLS_REPO="dga-tools"
-# $(id -u)
+
 mkdir -p "${HOME}/.tmp"
 aws_dir=$(mktemp -d  --tmpdir="${HOME}/.tmp" -t aws_XXXXXXXXXX )
 
 cp -a ${HOME}/.aws/* "${aws_dir}/"
 chmod ugo+rxw "${aws_dir}"
 chmod -R ugo+rw "${aws_dir}"
+
 set +e
 docker run \
     --dns 8.8.8.8 \
     --rm \
+    --env WHO=$(whoami) \
     --user 1000:$(getent group docker|cut -d ':' -f 3)\
     --interactive \
     --tty \
