@@ -51,6 +51,12 @@ function doPush()
   ./push.sh
 }
 
+function doValidate()
+{
+  ./build.sh
+  ./run.sh --mode validate
+}
+
 function doApply()
 {
   ./build.sh
@@ -106,6 +112,9 @@ function doMode()
       ;;
     release)
       doRelease
+      ;;    
+    validate)
+      doValidate
       ;;
     apply)
       doApply

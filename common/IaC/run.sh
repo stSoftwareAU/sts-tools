@@ -54,13 +54,15 @@ s3_tf="${S3_BUCKET}/${DOCKER_REPO}"
 
 aws s3 cp s3://${s3_tf} ${tf_dir} --recursive
 
-tmpApps=$(mktemp -t apps_XXXXXXXXXX)
-aws appconfig list-applications > ${tmpApps}
+if [[ ! "${MODE}" =~ (validate) ]]; then
+  tmpApps=$(mktemp -t apps_XXXXXXXXXX)
+  aws appconfig list-applications > ${tmpApps}
 
-APP=$(jq ".Items[]|select( .Name==\"${DOCKER_REPO}\" )" ${tmpApps})
-rm ${tmpApps}
-if [[ ! -z "${APP}" ]]; then
-    aws appconfig get-configuration --application ${DOCKER_REPO} --environment ${AREA,,} --configuration config --client-id any-id ${tmpConfig}/config.auto.tfvars.json
+  APP=$(jq ".Items[]|select( .Name==\"${DOCKER_REPO}\" )" ${tmpApps})
+  rm ${tmpApps}
+  if [[ ! -z "${APP}" ]]; then
+      aws appconfig get-configuration --application ${DOCKER_REPO} --environment ${AREA,,} --configuration config --client-id any-id ${tmpConfig}/config.auto.tfvars.json
+  fi
 fi
 
 DIGEST=$(docker inspect ${DOCKER_REPO}:latest |jq -r .[0].Id )
