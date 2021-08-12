@@ -41,8 +41,10 @@ fi
 . ./init.sh
 
 if [[ ! ${ACCOUNT_ALIAS} =~ ^.*"${AREA,,}"$ ]]; then
-  echo "Wrong AREA (${AREA}) for account (${ACCOUNT_ALIAS})"
-  exit 1
+  if [[ ! "${MODE}" =~ (validate) ]]; then
+    echo "Wrong AREA (${AREA}) for account (${ACCOUNT_ALIAS}) for mode (${MODE})"
+    exit 1
+  fi
 fi
 
 tf_dir=$(mktemp -d -t tf_XXXXXXXXXX)
