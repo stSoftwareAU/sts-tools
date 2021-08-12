@@ -4,17 +4,14 @@ pipeline {
     }
 
     triggers {
-        pollSCM( '* 0-8 * * 1-5')
-        cron( 'H 3 * * 3') // UTC About Midday Sydney time
+        pollSCM( '* 22,23,0-8 * * 0-5')
+        cron( 'H H(2-3) * * H(2-4)') // UTC About Midday Sydney time on a workday.
     }
 
-    // environment {
-    //     GIT_CREDENTIALS = 'e0c8abc2-7a04-4a41-96b1-1d56c0cf1874'
-    //     REPOS_DIR = '.repos/'
-    // }
-
     options {
-        timeout(time: 1, unit: 'HOURS')
+      timeout(time: 1, unit: 'HOURS')
+      disableConcurrentBuilds()
+      parallelsAlwaysFailFast()
     }
 
     stages {
