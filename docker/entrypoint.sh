@@ -43,6 +43,7 @@ function doPlan()
 
 function doDestroy()
 {
+  ./build.sh
   ./run.sh --mode destroy
 }
 
