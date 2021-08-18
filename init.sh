@@ -6,7 +6,7 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
-export TOOLS_VERSION="2.4"
+export TOOLS_VERSION="2.5"
 
 function compareVersion () {
     if [[ $1 == $2 ]]
@@ -187,11 +187,14 @@ if [[ ! -z "${ROLE}" ]]; then
     profileArg=" --profile ${PROFILE}"
   fi
 
-  TEMP_ROLE=`aws sts assume-role ${profileArg} --role-arn $ASSUME_ROLE_ARN --role-session-name "Deploy_${REPO}"`
+  tmpCredentials=$(mktemp /tmp/credentials_XXXXXX.json)
+  aws sts assume-role ${profileArg} --role-arn $ASSUME_ROLE_ARN --role-session-name "Deploy_${REPO:${PACKAGE}}">${tmpCredentials}
 
-  export AWS_ACCESS_KEY_ID=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.AccessKeyId')
-  export AWS_SECRET_ACCESS_KEY=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SecretAccessKey')
-  export AWS_SESSION_TOKEN=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken')
+  export AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' ${tmpCredentials})
+  export AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' ${tmpCredentials})
+  export AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' ${tmpCredentials})
+
+  rm ${tmpCredentials}
 fi
 
 REAL_AREA=$(echo "${ACCOUNT_ALIAS}"| cut -d '-' -f 2)
