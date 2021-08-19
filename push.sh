@@ -2,15 +2,21 @@
 #
 # WARNING: Automatically copied from dga-tools
 #
+# Turn on errors.
 set -e
+# BASE_DIR is picked up from the location of this script.
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
+# GIT_COMMIT is an environment variable that
+# gets set automatically by Jenkins when it
+# performs the build.
 if [[ -z "${GIT_COMMIT}" ]]; then
   echo "Must specify GIT_COMMIT"
   exit 1
 fi
 
+# 
 . ./init.sh
 
 ECR="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
