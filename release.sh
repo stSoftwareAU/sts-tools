@@ -30,3 +30,7 @@ docker tag "${ECR}/${AREA,,}/${DOCKER_REPO}:released_${EXT}" \
            "${ECR}/${AREA,,}/${DOCKER_REPO}:latest"
 
 docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:latest"
+
+aws ecr batch-delete-image \
+     --repository-name "temp-${AREA,,}/${DOCKER_REPO}" \
+     --image-ids imageTag=${GIT_COMMIT}
