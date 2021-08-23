@@ -52,6 +52,7 @@ TOOLS_REPO="dga-tools"
 mkdir -p "${HOME}/.tmp"
 aws_dir=$(mktemp -d  --tmpdir="${HOME}/.tmp" -t aws_XXXXXXXXXX )
 
+mkdir -p ${HOME}/.aws/cli/cache
 cp -a ${HOME}/.aws/* "${aws_dir}/"
 chmod ugo+rxw "${aws_dir}"
 chmod -R ugo+rw "${aws_dir}"
@@ -73,6 +74,8 @@ docker run \
     "${args[@]}"
 
 ERROR=$?
+
+cp -a ${aws_dir}/cli/cache/* ${HOME}/.aws/cli/cache/
 rm -rf ${aws_dir}
 
 exit ${ERROR}

@@ -24,11 +24,14 @@ docker pull --quiet "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}"
 docker tag "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}" \
            "${ECR}/${AREA,,}/${DOCKER_REPO}:released_${EXT}"
 
-docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:released_${EXT}"
+docker tag "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}" \
+           "${ECR}/${AREA,,}/${DOCKER_REPO}:git_${GIT_COMMIT}"
 
 docker tag "${ECR}/${AREA,,}/${DOCKER_REPO}:released_${EXT}" \
            "${ECR}/${AREA,,}/${DOCKER_REPO}:latest"
 
+docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:git_${GIT_COMMIT}"
+docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:released_${EXT}"
 docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:latest"
 
 aws ecr batch-delete-image \
