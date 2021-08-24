@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM amazon/aws-cli:latest
 
-RUN yum install git jq -y && \
+RUN yum install git jq tar -y && \
     amazon-linux-extras install docker && \
     useradd -u 1000 -d /home/tools tools && \
     usermod -aG docker tools
