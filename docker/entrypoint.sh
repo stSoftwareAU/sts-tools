@@ -155,7 +155,7 @@ function listChoices()
   echo -e "\e[2mREPL \e[0m${DOCKER_REPO}:${COLOR}${AREA}\e[0m"
   echo ""
   echo "1) BUILD:   Build the docker image"
-  echo "2) DEPLOY:  Deploy the IaC"
+  echo "2) APPLY:   Apply the IaC"
   echo "3) PUSH:    Push the docker image"
   echo "4) PULL:    Pull the docker image"
   echo "5) RELEASE: Release the docker image"
@@ -176,7 +176,7 @@ function doREPL()
         doMode build
         ;;
       2)
-        doMode deploy
+        doMode apply
         ;;
       3)
         doMode push
