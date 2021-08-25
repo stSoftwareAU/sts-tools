@@ -6,7 +6,7 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
-export TOOLS_VERSION="2.10"
+export TOOLS_VERSION="2.12"
 
 function compareVersion () {
     if [[ $1 == $2 ]]
@@ -47,7 +47,6 @@ function compareVersion () {
 function checkVersion(){
 
   compareVersion ${REQUIRED_VERSION:-${TOOLS_VERSION}} ${TOOLS_VERSION}
-  # compareVersion ${REQUIRED_VERSION:-1} ${VERSION}
 
   if [[ ${RESULT} > 0 ]]; then
     echo "FAIL: Required VERSION ${REQUIRED_VERSION}, was ${TOOLS_VERSION}"
@@ -73,8 +72,10 @@ ENV_FILE="${WORKSPACE}/.env" # Default environment used by docker-compose.
 
 if [[ -f ${OLD_FILE} ]]; then
   if [[ ! -f ${ENV_FILE} ]]; then
-    echo "WARNING OLD environment file found: ${OLD_FILE}"
+    echo "WARNING OLD environment file found (fixed): ${OLD_FILE}"
     mv ${OLD_FILE} ${ENV_FILE}
+  else
+    echo "WARNING deplicate environment files found. Old: ${OLD_FILE}, New: ${ENV_FILE}"
   fi
 fi
 
