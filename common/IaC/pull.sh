@@ -16,11 +16,11 @@ ECR="${DOCKER_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
 aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR}
 
-if [[ ! -z "${GIT_COMMIT}" ]]; then
-  DOCKER_TAG="${GIT_COMMIT}"
+if [[ ! -z "${COMMIT_ID}" ]]; then
+  DOCKER_TAG="${COMMIT_ID}"
 
-  docker pull --quiet ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}
-  docker tag ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT} ${DOCKER_REPO}:latest
+  docker pull --quiet ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${COMMIT_ID}
+  docker tag ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${COMMIT_ID} ${DOCKER_REPO}:latest
 else
   DOCKER_URI="${ECR}/${DOCKER_REPO}"
   docker pull --quiet ${ECR}/${AREA,,}/${DOCKER_REPO}:latest

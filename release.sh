@@ -3,8 +3,8 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
-if [[ -z "${GIT_COMMIT}" ]]; then
-  echo "Must specify GIT_COMMIT"
+if [[ -z "${COMMIT_ID}" ]]; then
+  echo "Must specify COMMIT_ID"
   exit 1
 fi
 
@@ -19,21 +19,21 @@ aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR}
 aws ecr describe-repositories --repository-names "${AREA,,}/${DOCKER_REPO}" || \
     aws ecr create-repository --image-scanning-configuration scanOnPush=true --repository-name "${AREA,,}/${DOCKER_REPO}"
 
-docker pull --quiet "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}"
+docker pull --quiet "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${COMMIT_ID}"
 
-docker tag "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}" \
+docker tag "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${COMMIT_ID}" \
            "${ECR}/${AREA,,}/${DOCKER_REPO}:released_${EXT}"
 
-docker tag "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}" \
-           "${ECR}/${AREA,,}/${DOCKER_REPO}:git_${GIT_COMMIT}"
+docker tag "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${COMMIT_ID}" \
+           "${ECR}/${AREA,,}/${DOCKER_REPO}:git_${COMMIT_ID}"
 
 docker tag "${ECR}/${AREA,,}/${DOCKER_REPO}:released_${EXT}" \
            "${ECR}/${AREA,,}/${DOCKER_REPO}:latest"
 
-docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:git_${GIT_COMMIT}"
+docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:git_${COMMIT_ID}"
 docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:released_${EXT}"
 docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:latest"
 
 aws ecr batch-delete-image \
      --repository-name "temp-${AREA,,}/${DOCKER_REPO}" \
-     --image-ids imageTag=${GIT_COMMIT}
+     --image-ids imageTag=${COMMIT_ID}
