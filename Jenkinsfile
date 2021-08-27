@@ -18,15 +18,21 @@ pipeline {
 
         stage('Build') {
 
-            steps {
-                sh """\
-                    #!/bin/bash
-                    set -ex
+          steps {
+            script{
+              /**
+              * Keep the COMMIT at the start of the build process so that it doesn't change during the build.
+              */
+              env.COMMIT_ID=env.GIT_COMMIT
+            }
+            sh """\
+                #!/bin/bash
+                set -ex
 
-                    ./build.sh
-                    ./push.sh
-                """.stripIndent()
-            }                
+                ./build.sh
+                ./push.sh
+            """.stripIndent()
+          }                
         }
 
         stage('CVE scan') {

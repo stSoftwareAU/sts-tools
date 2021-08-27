@@ -8,11 +8,11 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
-# GIT_COMMIT is an environment variable that
+# COMMIT_ID is an environment variable that
 # gets set automatically by Jenkins when it
 # performs the build.
-if [[ -z "${GIT_COMMIT}" ]]; then
-  echo "Must specify GIT_COMMIT"
+if [[ -z "${COMMIT_ID}" ]]; then
+  echo "Must specify COMMIT_ID"
   exit 1
 fi
 
@@ -26,5 +26,5 @@ aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR}
 aws ecr describe-repositories --repository-names temp-${AREA,,}/${DOCKER_REPO} || \
     aws ecr create-repository --image-scanning-configuration scanOnPush=true --repository-name temp-${AREA,,}/${DOCKER_REPO}
 
-docker tag ${DOCKER_REPO}:latest ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}
-docker push --quiet ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${GIT_COMMIT}
+docker tag ${DOCKER_REPO}:latest ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${COMMIT_ID}
+docker push --quiet ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${COMMIT_ID}
