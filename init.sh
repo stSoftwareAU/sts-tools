@@ -130,7 +130,7 @@ if [[ -z "${DEPARTMENT}" ]] || [[ -z "${ACCOUNT_ID}" ]] || [[ -z "${REGION}" ]];
 fi
 
 if [[ -z "${AREA}" ]]; then
-  # If a PR then use CHANGE_TARGET
+  # If a PR then use CHANGE_BRANCH
   if [[ ! -z "${CHANGE_BRANCH}" ]]; then
     AREA="${CHANGE_BRANCH}"
   elif [[ ! -z "${BRANCH_NAME}" ]]; then
