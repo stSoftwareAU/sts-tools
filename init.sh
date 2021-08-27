@@ -6,7 +6,7 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
-export TOOLS_VERSION="2.13"
+export TOOLS_VERSION="2.14"
 
 function compareVersion () {
     if [[ $1 == $2 ]]
@@ -131,8 +131,8 @@ fi
 
 if [[ -z "${AREA}" ]]; then
   # If a PR then use CHANGE_TARGET
-  if [[ ! -z "${CHANGE_TARGET}" ]]; then
-    AREA="${CHANGE_TARGET}"
+  if [[ ! -z "${CHANGE_BRANCH}" ]]; then
+    AREA="${CHANGE_BRANCH}"
   elif [[ ! -z "${BRANCH_NAME}" ]]; then
     AREA="${BRANCH_NAME}"
   else

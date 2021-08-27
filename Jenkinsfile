@@ -20,15 +20,34 @@ pipeline {
 
             steps {
                 sh """\
-                #!/bin/bash
-                set -e
+                    #!/bin/bash
+                    set -ex
 
-                ./build.sh
-                ./push.sh
+                    ./build.sh
+                    ./push.sh
                 """.stripIndent()
-            }
-                
+            }                
         }
+
+        stage('CVE scan') {
+          when { anyOf{ branch 'Develop'; changeRequest target: 'Develop'} }
+          
+          steps {
+            sh '''\
+              #!/bin/bash
+              set -ex
+              
+              cp common/IaC/cve-scan.sh ./
+              ./cve-scan.sh
+            '''.stripIndent()
+          } 
+          post {
+            always {
+              archiveArtifacts artifacts: 'cve-scan.json', fingerprint: true
+            }    
+          }
+        }
+
         stage('Release') {
             // when { branch 'Develop' }
             
@@ -38,7 +57,7 @@ pipeline {
                     #!/bin/bash
                     set -ex
                     ./release.sh
-                    """.stripIndent()
+                """.stripIndent()
             }
         }
     }
