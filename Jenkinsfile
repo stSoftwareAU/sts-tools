@@ -37,7 +37,8 @@ pipeline {
               #!/bin/bash
               set -ex
               
-              common/IaC/cve-scan.sh
+              cp common/IaC/cve-scan.sh ./
+              ./cve-scan.sh
             '''.stripIndent()
           } 
           post {
