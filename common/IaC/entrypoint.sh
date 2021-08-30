@@ -2,7 +2,7 @@
 #
 # WARNING: Automatically copied from dga-tools
 #
-set -ex
+set -e
 
 function doInit()
 {
