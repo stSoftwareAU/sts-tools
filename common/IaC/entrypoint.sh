@@ -2,7 +2,7 @@
 #
 # WARNING: Automatically copied from dga-tools
 #
-set -e
+set -ex
 
 function doInit()
 {
@@ -11,7 +11,9 @@ function doInit()
   fi
 
   for f in .config/*.auto.tfvars.json; do 
-    cp $f . 
+    if [[ -e "$f" ]]; then
+      cp $f . 
+    fi
   done
 }
 
