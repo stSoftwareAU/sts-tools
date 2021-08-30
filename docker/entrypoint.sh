@@ -61,7 +61,7 @@ function doValidate()
 function doApply()
 {
   ./build.sh
-  ./run.sh --mode apply
+  ./run.sh --mode apply $1 $2
 }
 
 function doState()
@@ -118,7 +118,7 @@ function doMode()
       doValidate
       ;;
     apply)
-      doApply
+      doApply $2 $3
       ;;
     init)
       doInit
