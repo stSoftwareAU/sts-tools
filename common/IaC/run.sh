@@ -6,6 +6,7 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
+args=()
 MODE=""
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -21,8 +22,7 @@ while [[ $# -gt 0 ]]; do
       # shift
       ;;      
     *)
-      echo "${key}: Unknown argument"
-      exit 5
+      args+=("${1}")
       ;;
   esac
 
@@ -87,8 +87,8 @@ docker run \
     --volume ${tf_dir}/store:/home/IaC/store \
     --volume ${tmpConfig}:/home/IaC/.config \
     ${DOCKER_REPO}:latest \
-    ${MODE}
-
+    ${MODE} "${args[@]}"
+    
 rm -rf ${tmpConfig}
 
 aws s3 cp ${tf_dir}/store s3://${s3_tf}/store --recursive
