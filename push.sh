@@ -26,5 +26,5 @@ aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR}
 aws ecr describe-repositories --repository-names temp-${AREA,,}/${DOCKER_REPO} || \
     aws ecr create-repository --image-scanning-configuration scanOnPush=true --repository-name temp-${AREA,,}/${DOCKER_REPO}
 
-docker tag ${DOCKER_REPO}:latest ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${COMMIT_ID}
-docker push --quiet ${ECR}/temp-${AREA,,}/${DOCKER_REPO}:${COMMIT_ID}
+docker tag "${DOCKER_REPO}:latest" "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:git_${COMMIT_ID}"
+docker push --quiet "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:git_${COMMIT_ID}"

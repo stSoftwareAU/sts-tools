@@ -6,7 +6,7 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
-export TOOLS_VERSION="2.15.3"
+export TOOLS_VERSION="3.01"
 
 function compareVersion () {
     if [[ $1 == $2 ]]
@@ -66,22 +66,11 @@ fi
 
 export WORKSPACE
 
-OLD_FILE="${WORKSPACE}/.env.properties"
-
 ENV_FILE="${WORKSPACE}/.env" # Default environment used by docker-compose.
 
-if [[ -f ${OLD_FILE} ]]; then
-  if [[ ! -f ${ENV_FILE} ]]; then
-    echo "WARNING OLD environment file found (fixed): ${OLD_FILE}"
-    mv ${OLD_FILE} ${ENV_FILE}
-  else
-    echo "WARNING deplicate environment files found. Old: ${OLD_FILE}, New: ${ENV_FILE}"
-  fi
-fi
-
 if [[ -f ${ENV_FILE} ]]; then
-    source ${ENV_FILE}
-    export $(grep -v "#" ${ENV_FILE} |cut -d= -f1 )
+  source ${ENV_FILE}
+  export $(grep -v "#" ${ENV_FILE} |cut -d= -f1 )
 fi
 
 if [[ -z "${ACCOUNT_ID}" ]]; then
