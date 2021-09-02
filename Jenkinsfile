@@ -43,17 +43,19 @@ pipeline {
         when { anyOf{ branch 'Develop'; changeRequest target: 'Develop'} }
         
         steps {
-          try{
-            sh '''\
-              #!/bin/bash
-              set -ex
-              
-              cp common/IaC/cve-scan.sh ./
-              ./cve-scan.sh
-            '''.stripIndent()
-          } catch(err) {
-            echo "Caught: ${err}"
-            env.CVE_SCAN_FAILED=true
+          script{
+            try{
+              sh '''\
+                #!/bin/bash
+                set -ex
+                
+                cp common/IaC/cve-scan.sh ./
+                ./cve-scan.sh
+              '''.stripIndent()
+            } catch(err) {
+              echo "Caught: ${err}"
+              env.CVE_SCAN_FAILED=true
+            }
           }
         } 
         post {
@@ -64,7 +66,7 @@ pipeline {
       }
 
       stage('Prompt'){
-        when{ expression { env.CVE_SCAN_FAILED == true}}
+        when{ expression { env.CVE_SCAN_FAILED == 'true'}}
         steps{
           script {
             try {
