@@ -16,7 +16,6 @@ if [[ -z "${COMMIT_ID}" ]]; then
   exit 1
 fi
 
-# 
 . ./init.sh
 
 ECR="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
