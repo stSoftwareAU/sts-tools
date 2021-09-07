@@ -6,7 +6,7 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
-export TOOLS_VERSION="3.1.2"
+export TOOLS_VERSION="3.2"
 
 function compareVersion () {
     if [[ $1 == $2 ]]
@@ -175,7 +175,7 @@ if [[ ! -z "${DOCKER_ACCOUNT_ID}" ]]; then
   export DOCKER_ACCOUNT_ID
 fi
 
-if [[ ! -z "${COMMIT_ID}" ]]; then
+if [[ -z "${COMMIT_ID}" ]]; then
   COMMIT_ID=${GIT_COMMIT}
 fi
 
