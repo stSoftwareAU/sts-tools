@@ -75,12 +75,7 @@ pipeline {
               }
             } catch(err) { // timeout reached or input false
               echo "Caught: ${err}"
-              // def user = err.getCauses()[0].getUser()
-              // if('SYSTEM' == user.toString()) { // SYSTEM means timeout.
-              //   echo "Timeout"
-              // } else { 
-              //   echo "Aborted by: [${user}]"
-              // }
+
               currentBuild.result = 'FAILURE'
             }
           }
@@ -88,7 +83,6 @@ pipeline {
       }
       
       stage('Release') {
-          // when { branch 'Develop' }
           
           steps {
 
