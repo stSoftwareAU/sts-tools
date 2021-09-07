@@ -14,10 +14,6 @@ pipeline {
     parallelsAlwaysFailFast()
   }
 
-  parameters {
-    booleanParam(name: 'CVE_SCAN_FAILED', defaultValue: false)
-  }
-
   stages {
 
       stage('Build') {
@@ -52,6 +48,7 @@ pipeline {
                 cp common/IaC/cve-scan.sh ./
                 ./cve-scan.sh
               '''.stripIndent()
+              env.CVE_SCAN_FAILED=false
             } catch(err) {
               echo "Caught: ${err}"
               env.CVE_SCAN_FAILED=true
