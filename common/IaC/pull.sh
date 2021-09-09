@@ -3,7 +3,7 @@
 # WARNING: Automatically copied from dga-tools
 #
 set -e
-BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
+BASE_DIR="$(cd -P "$(dirname "$BASH_SOURCE")" && pwd -P)"
 cd "${BASE_DIR}"
 
 . ./init.sh
@@ -26,4 +26,4 @@ else
 fi
 
 # List the docker image that was actually pulled.
-docker images --digests |grep ${DOCKER_REPO}
+docker images --digests | grep ${DOCKER_REPO}

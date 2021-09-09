@@ -3,7 +3,7 @@
 # WARNING: Automatically copied from dga-tools
 #
 set -e
-BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
+BASE_DIR="$(cd -P "$(dirname "$BASH_SOURCE")" && pwd -P)"
 cd "${BASE_DIR}"
 
 . ./init.sh
@@ -26,7 +26,7 @@ s3_tf="${S3_BUCKET}/${DOCKER_REPO}"
 aws s3 cp s3://${s3_tf} ${tf_dir} --recursive
 
 tmpApps=$(mktemp -t apps_XXXXXXXXXX)
-aws appconfig list-applications > ${tmpApps}
+aws appconfig list-applications >${tmpApps}
 
 APP=$(jq ".Items[]|select( .Name==\"${DOCKER_REPO}\" )" ${tmpApps})
 rm ${tmpApps}

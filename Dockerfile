@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:1
 FROM amazon/aws-cli:latest
 
-RUN yum install git jq tar -y && \
-    amazon-linux-extras install docker && \
-    useradd -u 1000 -d /home/tools tools && \
-    usermod -aG docker tools
+RUN yum install git jq tar -y &&
+  amazon-linux-extras install docker &&
+  useradd -u 1000 -d /home/tools tools &&
+  usermod -aG docker tools
 
-COPY docker/entrypoint.sh /entrypoint.sh 
+COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh
 
 WORKDIR /home/tools
@@ -18,8 +18,8 @@ COPY create-bucket.sh .
 COPY push.sh .
 COPY common/IaC/ .
 
-RUN chown -R tools /home/tools && \
-    chmod -R u+x /home/tools/*.sh
+RUN chown -R tools /home/tools &&
+  chmod -R u+x /home/tools/*.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 

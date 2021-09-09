@@ -4,26 +4,23 @@
 #
 set -e
 
-function doInit()
-{
+function doInit() {
   if test -f "store/terraform.tfstate"; then
-      cp store/*.tfstate .
+    cp store/*.tfstate .
   fi
 
-  for f in .config/*.auto.tfvars.json; do 
+  for f in .config/*.auto.tfvars.json; do
     if [[ -e "$f" ]]; then
-      cp $f . 
+      cp $f .
     fi
   done
 }
 
-function doStore()
-{
+function doStore() {
   cp *.tfstate store/
 }
 
-function doApply()
-{
+function doApply() {
   doInit
 
   terraform init ${NO_COLOR_ARG} -input=false
@@ -34,8 +31,7 @@ function doApply()
   doStore
 }
 
-function doPlan()
-{
+function doPlan() {
   doInit
 
   terraform init -input=false
@@ -43,16 +39,14 @@ function doPlan()
   terraform plan -input=false -out=tf.plan
 }
 
-function doValidate()
-{
+function doValidate() {
   doInit
 
   terraform init -input=false
   terraform validate
 }
 
-function doState()
-{
+function doState() {
   doInit
 
   terraform init -input=false
@@ -62,8 +56,7 @@ function doState()
   doStore
 }
 
-function doImport()
-{
+function doImport() {
   doInit
 
   terraform init -input=false
@@ -73,16 +66,14 @@ function doImport()
   doStore
 }
 
-function doDestroy()
-{
+function doDestroy() {
   doInit
   terraform init -input=false
   terraform destroy -auto-approve -input=false
   doStore
 }
 
-function doShell()
-{
+function doShell() {
   doInit
   terraform init -input=false
   /bin/sh
@@ -100,36 +91,36 @@ fi
 mode=$1
 
 case "${mode}" in
-  shell)
-    doShell
-    ;;
-  apply-no-color)
-    NO_COLOR_ARG="-no-color"
-    doApply $2 $3
-    ;;
-  apply)
-    doApply $2 $3
-    ;;
-  plan)
-    doPlan
-    ;;
-  state)
-    doState $2 $3
-    ;;
-  import)
-    doImport $2 $3
-    ;;
-  destroy)
-    doDestroy
-    ;;
-  reformat)
-    doReformat
-    ;;
-    validate)
-      doValidate
-      ;;
-  *)
-    echo "${mode}: Unknown mode"
-    exit 5
-    ;;
+shell)
+  doShell
+  ;;
+apply-no-color)
+  NO_COLOR_ARG="-no-color"
+  doApply $2 $3
+  ;;
+apply)
+  doApply $2 $3
+  ;;
+plan)
+  doPlan
+  ;;
+state)
+  doState $2 $3
+  ;;
+import)
+  doImport $2 $3
+  ;;
+destroy)
+  doDestroy
+  ;;
+reformat)
+  doReformat
+  ;;
+validate)
+  doValidate
+  ;;
+*)
+  echo "${mode}: Unknown mode"
+  exit 5
+  ;;
 esac

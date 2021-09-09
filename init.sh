@@ -3,48 +3,42 @@
 # WARNING: Automatically copied from dga-tools.
 #
 set -e
-BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
+BASE_DIR="$(cd -P "$(dirname "$BASH_SOURCE")" && pwd -P)"
 cd "${BASE_DIR}"
 
-export TOOLS_VERSION="3.2.9"
+export TOOLS_VERSION="3.2.10"
 
-function compareVersion () {
-    if [[ $1 == $2 ]]
-    then
-      RESULT=0
-      return;
-    fi
-    local IFS=.
-    local i ver1=($1) ver2=($2)
-    # fill empty fields in ver1 with zeros
-    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
-    do
-        ver1[i]=0
-    done
-    for ((i=0; i<${#ver1[@]}; i++))
-    do
-        if [[ -z ${ver2[i]} ]]
-        then
-            # fill empty fields in ver2 with zeros
-            ver2[i]=0
-        fi
-        if ((10#${ver1[i]} > 10#${ver2[i]}))
-        then
-            RESULT=1
-            return
-        fi
-        if ((10#${ver1[i]} < 10#${ver2[i]}))
-        then
-          RESULT=-1
-          return
-        fi
-    done
-
+function compareVersion() {
+  if [[ $1 == $2 ]]; then
     RESULT=0
     return
+  fi
+  local IFS=.
+  local i ver1=($1) ver2=($2)
+  # fill empty fields in ver1 with zeros
+  for ((i = ${#ver1[@]}; i < ${#ver2[@]}; i++)); do
+    ver1[i]=0
+  done
+  for ((i = 0; i < ${#ver1[@]}; i++)); do
+    if [[ -z ${ver2[i]} ]]; then
+      # fill empty fields in ver2 with zeros
+      ver2[i]=0
+    fi
+    if ((10#${ver1[i]} > 10#${ver2[i]})); then
+      RESULT=1
+      return
+    fi
+    if ((10#${ver1[i]} < 10#${ver2[i]})); then
+      RESULT=-1
+      return
+    fi
+  done
+
+  RESULT=0
+  return
 }
 
-function checkVersion(){
+function checkVersion() {
 
   compareVersion ${REQUIRED_VERSION:-${TOOLS_VERSION}} ${TOOLS_VERSION}
 
@@ -70,25 +64,25 @@ ENV_FILE="${WORKSPACE}/.env" # Default environment used by docker-compose.
 
 if [[ -f ${ENV_FILE} ]]; then
   source ${ENV_FILE}
-  export $(grep -v "#" ${ENV_FILE} |cut -d= -f1 )
+  export $(grep -v "#" ${ENV_FILE} | cut -d= -f1)
 fi
 
 if [[ -z "${ACCOUNT_ID}" ]]; then
   if [[ ! -z "${PROFILE}" ]]; then
     tmpIdentity=$(mktemp /tmp/identity_XXXXXX.json)
-    aws sts --profile "${PROFILE}" get-caller-identity > ${tmpIdentity}
-    ACCOUNT_ID=$(jq -r .Account  ${tmpIdentity})
+    aws sts --profile "${PROFILE}" get-caller-identity >${tmpIdentity}
+    ACCOUNT_ID=$(jq -r .Account ${tmpIdentity})
 
-    REGION=$(aws configure --profile "${PROFILE}" get region)||true
+    REGION=$(aws configure --profile "${PROFILE}" get region) || true
   else
 
     tmpIdentity=$(mktemp /tmp/identity_XXXXXX.json)
 
-    curl -s http://169.254.169.254/latest/dynamic/instance-identity/document > ${tmpIdentity}||true
+    curl -s http://169.254.169.254/latest/dynamic/instance-identity/document >${tmpIdentity} || true
 
     if [[ -s ${tmpIdentity} ]]; then
-      ACCOUNT_ID=$(jq -r .accountId  ${tmpIdentity})
-      REGION=$(jq -r .region  ${tmpIdentity})
+      ACCOUNT_ID=$(jq -r .accountId ${tmpIdentity})
+      REGION=$(jq -r .region ${tmpIdentity})
     fi
   fi
 fi
@@ -99,12 +93,12 @@ fi
 
 if [[ -z "${GIT_REPO}" ]]; then
   cd "${WORKSPACE}"
-  GIT_REPO=$(basename -s .git `git config --get remote.origin.url`)
+  GIT_REPO=$(basename -s .git $(git config --get remote.origin.url))
   cd "${BASE_DIR}"
 fi
 
 if [[ -z "${DEPARTMENT}" ]]; then
-  DEPARTMENT=$(echo ${GIT_REPO^^}| cut -d '-' -f 1)
+  DEPARTMENT=$(echo ${GIT_REPO^^} | cut -d '-' -f 1)
 fi
 
 if [[ -z "${PACKAGE}" ]]; then
@@ -126,7 +120,7 @@ if [[ -z "${AREA}" ]]; then
     AREA="${BRANCH_NAME}"
   else
     cd "${WORKSPACE}"
-    tmpAREA=`git branch --show-current`
+    tmpAREA=$(git branch --show-current)
     cd "${BASE_DIR}"
 
     AREA="${tmpAREA}"
@@ -135,9 +129,9 @@ fi
 
 tmpAliases=$(mktemp /tmp/aliases_XXXXXX.json)
 if [[ ! -z "${PROFILE}" ]]; then
-  aws iam --profile ${PROFILE} list-account-aliases > ${tmpAliases}
+  aws iam --profile ${PROFILE} list-account-aliases >${tmpAliases}
 else
-  aws iam list-account-aliases > ${tmpAliases}
+  aws iam list-account-aliases >${tmpAliases}
 fi
 
 ACCOUNT_ALIAS=$(jq -r .AccountAliases[0] ${tmpAliases} | tr '[:upper:]' '[:lower]')
@@ -183,7 +177,7 @@ export COMMIT_ID
 
 if [[ -z "${ROLE}" ]]; then
   if [[ ! -z "${PROFILE}" ]]; then
-    ROLE=$(aws sts --profile "${PROFILE}" get-caller-identity |jq -r .Arn|cut -d '/' -f 2)
+    ROLE=$(aws sts --profile "${PROFILE}" get-caller-identity | jq -r .Arn | cut -d '/' -f 2)
   fi
 fi
 
@@ -197,7 +191,7 @@ if [[ ! -z "${ROLE}" ]]; then
   fi
 
   tmpCredentials=$(mktemp /tmp/credentials_XXXXXX.json)
-  aws sts assume-role ${profileArg} --role-arn $ASSUME_ROLE_ARN --role-session-name "Deploy_${REPO:${PACKAGE}}">${tmpCredentials}
+  aws sts assume-role ${profileArg} --role-arn $ASSUME_ROLE_ARN --role-session-name "Deploy_${REPO:${PACKAGE}}" >${tmpCredentials}
 
   export AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' ${tmpCredentials})
   export AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' ${tmpCredentials})
@@ -206,17 +200,17 @@ if [[ ! -z "${ROLE}" ]]; then
   rm ${tmpCredentials}
 fi
 
-REAL_AREA=$(echo "${ACCOUNT_ALIAS}"| cut -d '-' -f 2)
-export S3_BUCKET=`echo "${DEPARTMENT}-terraform-${REAL_AREA}-${REGION}"|tr "[:upper:]" "[:lower:]"`
-LIST_BUCKETS=`aws s3api list-buckets`
+REAL_AREA=$(echo "${ACCOUNT_ALIAS}" | cut -d '-' -f 2)
+export S3_BUCKET=$(echo "${DEPARTMENT}-terraform-${REAL_AREA}-${REGION}" | tr "[:upper:]" "[:lower:]")
+LIST_BUCKETS=$(aws s3api list-buckets)
 
-CreationDate=`jq ".Buckets[]|select(.Name==\"${S3_BUCKET}\").CreationDate" <<< "$LIST_BUCKETS"`
+CreationDate=$(jq ".Buckets[]|select(.Name==\"${S3_BUCKET}\").CreationDate" <<<"$LIST_BUCKETS")
 if [[ -z "${CreationDate}" ]]; then
-    if [[ -s  /home/tools/create-bucket.sh ]]; then
-      /home/tools/create-bucket.sh
-    else
-      echo "No bucket ${S3_BUCKET}"
-      exit 1
-    fi
+  if [[ -s /home/tools/create-bucket.sh ]]; then
+    /home/tools/create-bucket.sh
+  else
+    echo "No bucket ${S3_BUCKET}"
+    exit 1
+  fi
 fi
 export INITIALIZED="YES"
