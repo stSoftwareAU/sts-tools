@@ -6,7 +6,7 @@ set -e
 BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
 cd "${BASE_DIR}"
 
-export TOOLS_VERSION="3.2.1"
+export TOOLS_VERSION="3.2.3"
 
 function compareVersion () {
     if [[ $1 == $2 ]]
