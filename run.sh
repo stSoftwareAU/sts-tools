@@ -59,19 +59,19 @@ chmod -R ugo+rw "${aws_dir}"
 
 set +e
 docker run \
-    --dns 8.8.8.8 \
-    --rm \
-    --env WHO=$(whoami) \
-    --env REQUIRED_VERSION="${REQUIRED_VERSION}" \
-    --user 1000:$(getent group docker|cut -d ':' -f 3)\
-    --interactive \
-    --tty \
-    --volume /var/run/docker.sock:/var/run/docker.sock \
-    --volume ${TOOLS_WORKSPACE}:/home/workspace \
-    --volume ${aws_dir}:/home/tools/.aws \
-    --volume /tmp:/tmp \
-    ${TOOLS_REPO}:latest \
-    "${args[@]}"
+  --dns 8.8.8.8 \
+  --rm \
+  --env WHO=$(whoami) \
+  --env REQUIRED_VERSION="${REQUIRED_VERSION}" \
+  --user 1000:$(getent group docker|cut -d ':' -f 3)\
+  --interactive \
+  --tty \
+  --volume /var/run/docker.sock:/var/run/docker.sock \
+  --volume ${TOOLS_WORKSPACE}:/home/workspace \
+  --volume ${aws_dir}:/home/tools/.aws \
+  --volume /tmp:/tmp \
+  ${TOOLS_REPO}:latest \
+  "${args[@]}"
 
 ERROR=$?
 

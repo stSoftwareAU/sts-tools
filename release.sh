@@ -31,6 +31,9 @@ docker tag "${ECR}/${AREA,,}/${DOCKER_REPO}:git_${COMMIT_ID}" \
 docker tag "${ECR}/${AREA,,}/${DOCKER_REPO}:git_${COMMIT_ID}" \
            "${ECR}/${AREA,,}/${DOCKER_REPO}:latest"
 
+# List the docker image that will be released.
+docker images --digests |grep ${DOCKER_REPO}
+
 docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:git_${COMMIT_ID}"
 docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:released_${EXT}"
 docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:latest"

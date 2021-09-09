@@ -41,16 +41,16 @@ chmod ugo+rxw "${tmpConfig}"
 chmod -R ugo+rw "${tmpConfig}"
 
 docker run \
-    --dns 8.8.8.8 \
-    --rm \
-    --env AWS_ACCESS_KEY_ID \
-    --env AWS_SECRET_ACCESS_KEY \
-    --env AWS_SESSION_TOKEN \
-    --env AWS_DEFAULT_REGION \
-    --volume ${tf_dir}/store:/home/IaC/store \
-    --volume ${tmpConfig}:/home/IaC/.config \
-    ${DOCKER_REPO}:latest \
-    import $1 $2
+  --dns 8.8.8.8 \
+  --rm \
+  --env AWS_ACCESS_KEY_ID \
+  --env AWS_SECRET_ACCESS_KEY \
+  --env AWS_SESSION_TOKEN \
+  --env AWS_DEFAULT_REGION \
+  --volume ${tf_dir}/store:/home/IaC/store \
+  --volume ${tmpConfig}:/home/IaC/.config \
+  ${DOCKER_REPO}:latest \
+  import $1 $2
 
 aws s3 cp ${tf_dir}/store s3://${s3_tf}/store --recursive
 

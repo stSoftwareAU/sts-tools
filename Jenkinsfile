@@ -15,79 +15,75 @@ pipeline {
   }
 
   stages {
-
       stage('Build') {
-
         steps {
-          script{
+          script {
             /**
             * Keep the COMMIT at the start of the build process so that it doesn't change during the build.
             */
-            env.COMMIT_ID=env.GIT_COMMIT
+            env.COMMIT_ID = env.GIT_COMMIT
           }
-          sh """\
+          sh '''\
               #!/bin/bash
               set -ex
 
               ./build.sh
               ./push.sh
-          """.stripIndent()
-        }                
+          '''.stripIndent()
+        }
       }
 
       stage('CVE scan') {
-        when { anyOf{ branch 'Develop'; changeRequest target: 'Develop'} }
-        
+        when { anyOf { branch 'Develop'; changeRequest target: 'Develop' } }
+
         steps {
-          script{
-            try{
-              sh '''\
+          script {
+            try {
+            sh '''\
                 #!/bin/bash
                 set -ex
-                
+
                 cp common/IaC/cve-scan.sh ./
                 ./cve-scan.sh
               '''.stripIndent()
-              env.CVE_SCAN_FAILED=false
-            } catch(err) {
-              echo "Caught: ${err}"
-              env.CVE_SCAN_FAILED=true
+            env.CVE_SCAN_FAILED = false
+            } catch (err) {
+            echo "Caught: ${err}"
+            env.CVE_SCAN_FAILED = true
             }
           }
-        } 
+        }
         post {
           always {
             archiveArtifacts artifacts: 'cve-scan.json', fingerprint: true
-          }    
+          }
         }
       }
 
-      stage('Prompt'){
-        when{ expression { env.CVE_SCAN_FAILED == 'true'}}
-        steps{
+      stage('Prompt') {
+        when { expression { env.CVE_SCAN_FAILED == 'true' } }
+        steps {
           script {
             try {
-              timeout(time: 15, unit: 'MINUTES') { 
-                input( message: 'CVE scan detected issues', ok: "Continue?")
-              }
-            } catch(err) { // timeout reached or input false
-              echo "Caught: ${err}"
+            timeout(time: 15, unit: 'MINUTES') {
+                input( message: 'CVE scan detected issues', ok: 'Continue?')
+            }
+            } catch (err) { // timeout reached or input false
+            echo "Caught: ${err}"
 
-              currentBuild.result = 'FAILURE'
+            currentBuild.result = 'FAILURE'
             }
           }
         }
       }
-      
-      stage('Release') {
-          
-          steps {
 
-              sh """\
+      stage('Release') {
+          steps {
+        sh '''\
                   #!/bin/bash
                   set -ex
                   ./release.sh
-              """.stripIndent()
+              '''.stripIndent()
           }
       }
   }
