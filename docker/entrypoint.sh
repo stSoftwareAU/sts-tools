@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e
 
-function setWS()
-{
+function setWS() {
   if [[ -z "${WORKSPACE}" ]]; then
     WORKSPACE="/home/workspace/"
   fi
@@ -14,75 +13,62 @@ function setWS()
   export WORKSPACE
 }
 
-function doInit()
-{
+function doInit() {
   setWS
 
   . ./init.sh
 }
 
-function doShell()
-{
+function doShell() {
   /bin/bash
 }
 
-function doBuild()
-{
+function doBuild() {
   ./build.sh
 }
 
-function doPull()
-{
+function doPull() {
   ./pull.sh
 }
 
-function doPlan()
-{
+function doPlan() {
   ./plan.sh
 }
 
-function doDestroy()
-{
+function doDestroy() {
   ./build.sh
   ./run.sh --mode destroy
 }
 
-function doPush()
-{
+function doPush() {
   ./push.sh
 }
 
-function doValidate()
-{
+function doValidate() {
   ./build.sh
   ./run.sh --mode validate
 }
 
-function doApply()
-{
+function doApply() {
   ./build.sh
   ./run.sh --mode apply $1 $2
 }
 
-function doState()
-{
+function doState() {
   ./build.sh
   ./state.sh $1 $2
 }
 
-function doImport()
-{
+function doImport() {
   ./build.sh
   ./import.sh $1 $2
 }
 
-function doRelease()
-{
+function doRelease() {
   ./release.sh
 }
 
-function doMode()
-{
+function doMode() {
   mode=$1
   if [[ -z "${mode}" ]]; then
     echo "Mode not defined"
@@ -90,54 +76,53 @@ function doMode()
   fi
 
   case "${mode}" in
-    shell)
-      doShell
-      ;;
-    repl)
-      doREPL
-      ;;
-    build)
-      doBuild
-      ;;
-    pull)
-      doPull
-      ;;
-    push)
-      doPush
-      ;;
-    plan)
-      doPlan
-      ;;
-    destroy)
-      doDestroy
-      ;;
-    release)
-      doRelease
-      ;;    
-    validate)
-      doValidate
-      ;;
-    apply)
-      doApply $2 $3
-      ;;
-    init)
-      doInit
-      ;;
-    state)
-      doState $2 $3
-      ;;
-    import)
-      doImport $2 $3
-      ;;
-    *)
-      echo "${mode}: Unknown mode"
-      exit 5
-      ;;
+  shell)
+    doShell
+    ;;
+  repl)
+    doREPL
+    ;;
+  build)
+    doBuild
+    ;;
+  pull)
+    doPull
+    ;;
+  push)
+    doPush
+    ;;
+  plan)
+    doPlan
+    ;;
+  destroy)
+    doDestroy
+    ;;
+  release)
+    doRelease
+    ;;
+  validate)
+    doValidate
+    ;;
+  apply)
+    doApply $2 $3
+    ;;
+  init)
+    doInit
+    ;;
+  state)
+    doState $2 $3
+    ;;
+  import)
+    doImport $2 $3
+    ;;
+  *)
+    echo "${mode}: Unknown mode"
+    exit 5
+    ;;
   esac
 }
 
-function listChoices()
-{
+function listChoices() {
   clear
 
   if [[ "${AREA}" =~ ^[pP]roduction$ ]]; then
@@ -166,41 +151,40 @@ function listChoices()
 }
 
 # Read-Evaluate-Print Loop (REPL)
-function doREPL()
-{
+function doREPL() {
   listChoices
 
   while IFS="" read -r -e -d $'\n' -p 'Choice> ' choice; do
     case "${choice}" in
-      1)
-        doMode build
-        ;;
-      2)
-        doMode apply
-        ;;
-      3)
-        doMode push
-        ;;
-      4)
-        doMode pull
-        ;;
-      5)
-        doMode release
-        ;;
-      6)
-        read -p 'Resource: ' resource
-        read -p 'ID: ' id
-        doMode import "${resource}" "${id}"
-        ;;
-      9)
-        doMode shell
-        ;;
-      0)
-        exit 0
-        ;;
-      *)
-        echo "Unknown choice ${choice}"
-        ;;
+    1)
+      doMode build
+      ;;
+    2)
+      doMode apply
+      ;;
+    3)
+      doMode push
+      ;;
+    4)
+      doMode pull
+      ;;
+    5)
+      doMode release
+      ;;
+    6)
+      read -p 'Resource: ' resource
+      read -p 'ID: ' id
+      doMode import "${resource}" "${id}"
+      ;;
+    9)
+      doMode shell
+      ;;
+    0)
+      exit 0
+      ;;
+    *)
+      echo "Unknown choice ${choice}"
+      ;;
     esac
     echo ""
     read -n 1 -s -r -p "Press any key to continue"
@@ -210,19 +194,19 @@ function doREPL()
 
 args=()
 MODE=""
-me=`basename "$0"`
+me=$(basename "$0")
 
 while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
-    -m|--mode)
-      shift # past argument
-      MODE="$1"
-      ;;
-    *)
-      args+=("${1}")
-      ;;
+  -m | --mode)
+    shift # past argument
+    MODE="$1"
+    ;;
+  *)
+    args+=("${1}")
+    ;;
   esac
 
   shift

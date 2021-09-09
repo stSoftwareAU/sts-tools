@@ -3,7 +3,7 @@
 # WARNING: Automatically copied from dga-tools
 #
 set -e
-BASE_DIR="$( cd -P "$( dirname "$BASH_SOURCE" )" && pwd -P )"
+BASE_DIR="$(cd -P "$(dirname "$BASH_SOURCE")" && pwd -P)"
 cd "${BASE_DIR}"
 
 . ./init.sh
@@ -26,7 +26,7 @@ s3_tf="${S3_BUCKET}/${DOCKER_REPO}"
 aws s3 cp s3://${s3_tf} ${tf_dir} --recursive
 
 tmpApps=$(mktemp -t apps_XXXXXXXXXX)
-aws appconfig list-applications > ${tmpApps}
+aws appconfig list-applications >${tmpApps}
 
 APP=$(jq ".Items[]|select( .Name==\"${DOCKER_REPO}\" )" ${tmpApps})
 rm ${tmpApps}
@@ -41,16 +41,16 @@ chmod ugo+rxw "${tmpConfig}"
 chmod -R ugo+rw "${tmpConfig}"
 
 docker run \
-    --dns 8.8.8.8 \
-    --rm \
-    --env AWS_ACCESS_KEY_ID \
-    --env AWS_SECRET_ACCESS_KEY \
-    --env AWS_SESSION_TOKEN \
-    --env AWS_DEFAULT_REGION \
-    --volume ${tf_dir}/store:/home/IaC/store \
-    --volume ${tmpConfig}:/home/IaC/.config \
-    ${DOCKER_REPO}:latest \
-    import $1 $2
+  --dns 8.8.8.8 \
+  --rm \
+  --env AWS_ACCESS_KEY_ID \
+  --env AWS_SECRET_ACCESS_KEY \
+  --env AWS_SESSION_TOKEN \
+  --env AWS_DEFAULT_REGION \
+  --volume ${tf_dir}/store:/home/IaC/store \
+  --volume ${tmpConfig}:/home/IaC/.config \
+  ${DOCKER_REPO}:latest \
+  import $1 $2
 
 aws s3 cp ${tf_dir}/store s3://${s3_tf}/store --recursive
 

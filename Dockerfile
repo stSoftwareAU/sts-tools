@@ -6,7 +6,7 @@ RUN yum install git jq tar -y && \
     useradd -u 1000 -d /home/tools tools && \
     usermod -aG docker tools
 
-COPY docker/entrypoint.sh /entrypoint.sh 
+COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh
 
 WORKDIR /home/tools
