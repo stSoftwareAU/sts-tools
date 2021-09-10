@@ -52,7 +52,7 @@ tmpConfig=$(mktemp -d -t config_XXXXXXXXXX)
 
 s3_tf="${S3_BUCKET}/${DOCKER_REPO}"
 mkdir -p ${tf_dir}/store
-aws s3 cp s3://${s3_tf}/store/terraform.tfstate ${tf_dir}/store 
+aws s3 cp s3://${s3_tf}/store/terraform.tfstate ${tf_dir}/store || true
 
 if [[ ! "${MODE}" =~ (validate) ]]; then
   tmpApps=$(mktemp -t apps_XXXXXXXXXX)
