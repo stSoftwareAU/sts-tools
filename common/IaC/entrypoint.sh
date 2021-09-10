@@ -18,6 +18,7 @@ function doInit() {
 
 function doStore() {
   cp *.tfstate store/
+  cp tf.plan store/
 }
 
 function doApply() {
