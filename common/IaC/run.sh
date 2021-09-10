@@ -91,6 +91,13 @@ docker run \
 
 rm -rf ${tmpConfig}
 
+if [[ -s ${tf_dir}/store/tf.plan ]]; then 
+  TS=$(date "+%Y-%m-%d_%H-%M-%S")
+  targetFile="${tf_dir}/tf_${TS}.plan"
+  mv ${tf_dir}/store/tf.plan ${targetFile}
+  aws s3 cp ${targetFile} s3://${s3_tf}/plans/
+fi 
+
 aws s3 cp ${tf_dir}/store s3://${s3_tf}/store --recursive
 
 rm -rf ${tf_dir}
