@@ -2,7 +2,7 @@
 #
 # WARNING: Automatically copied from dga-tools
 #
-FROM hashicorp/terraform:light
+FROM hashicorp/terraform:1.0.6
 
 COPY --chown=nobody:nobody entrypoint.sh .
 RUN chmod u+x entrypoint.sh
