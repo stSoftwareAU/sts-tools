@@ -9,6 +9,17 @@ function doInit() {
     cp store/*.tfstate .
   fi
 
+  ENV_FILE=".env"
+
+  if [[ -f ${ENV_FILE} ]]; then
+    source ${ENV_FILE}
+    export $(grep -v "#" ${ENV_FILE} | cut -d= -f1)
+  fi
+
+  if test -f "tools.properties"; then
+    . ./tools.properties
+  fi
+
   for f in .config/*.auto.tfvars.json; do
     if [[ -e "$f" ]]; then
       cp $f .
@@ -21,13 +32,47 @@ function doStore() {
   cp tf.plan store/
 }
 
+function tryApply() {
+  STATUS="FAILED"
+  terraform plan ${NO_COLOR_ARG} -input=false -out=tf.plan $1 $2
+  if [[ $? -ne 0 ]]; then
+    return
+  fi
+
+  terraform apply -auto-approve ${NO_COLOR_ARG} -input=false tf.plan
+  if [[ $? -ne 0 ]]; then
+    return
+  fi
+  
+  STATUS="OK"
+}
+
 function doApply() {
   doInit
 
   terraform init ${NO_COLOR_ARG} -input=false
   terraform validate ${NO_COLOR_ARG}
-  terraform plan ${NO_COLOR_ARG} -input=false -out=tf.plan $2 $3
-  terraform apply -auto-approve ${NO_COLOR_ARG} -input=false tf.plan
+
+  set +e
+
+  let n=0
+  while true
+  do
+    tryApply $1 $2
+    if [[ "${STATUS}" == "OK" ]]; then 
+      break;
+    fi
+
+    let n=n+1
+    if [[ "$n" -ge ${ATTEMPTS:-1} ]]; then
+      echo "Failed after ${n} attempts"
+      exit 1
+    fi
+
+    echo "Retrying after ${PAUSE:-60} seconds ${n} of ${ATTEMPTS:-1} attempts"
+    sleep ${PAUSE:-60}
+  done
+  set -e
 
   doStore
 }
