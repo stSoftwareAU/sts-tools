@@ -3,15 +3,15 @@ set -e
 BASE_DIR="$(cd -P "$(dirname "$BASH_SOURCE")" && pwd -P)"
 cd "${BASE_DIR}"
 
-if [[ -z "${COMMIT_ID}" ]]; then
-  echo "Must specify COMMIT_ID"
+if [[ -z "${GIT_COMMIT}" ]]; then
+  echo "Must specify GIT_COMMIT"
   exit 1
 fi
 
 . ./init.sh
 
 TS=$(date "+%Y%m%d%H%M%S%Z")
-EXT="git_${COMMIT_ID}"
+EXT="git_${GIT_COMMIT}"
 UNIQUE_EXT="ts_${TS}-${EXT}"
 
 ECR="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
@@ -38,7 +38,3 @@ docker images --digests | grep ${DOCKER_REPO}
 docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:${UNIQUE_EXT}"
 docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:${EXT}"
 docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:latest"
-
-aws ecr batch-delete-image \
-  --repository-name "temp-${AREA,,}/${DOCKER_REPO}" \
-  --image-ids imageTag="git_${COMMIT_ID}"
