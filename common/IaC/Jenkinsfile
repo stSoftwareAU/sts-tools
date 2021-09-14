@@ -1,14 +1,10 @@
 /*
  * WARNING: Automatically copied from dga-tools
  */
-
+TOOLS_IMAGE = 'dga-tools:latest'
+TOOLS_ARGS = '--volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp:/tmp'
 pipeline {
-  agent {
-    docker {
-      image 'dga-tools:latest'
-      args '--volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp:/tmp'
-    }
-  }
+  agent none
 
   triggers {
     pollSCM( '* 22,23,0-8 * * 0-5')
@@ -24,11 +20,23 @@ pipeline {
   stages {
     stage('Build') {
 
+      when {
+        environment name: 'CHANGE_ID', value: '' // Not a Pull Request
+        beforeAgent true
+      }
+
+      agent {
+        docker {
+          image TOOLS_IMAGE
+          args TOOLS_ARGS
+        }
+      }
+
       steps {
         sh '''\
           #!/bin/bash
           set -ex
-
+          env|grep GIT
           /home/tools/build.sh
           /home/tools/push.sh
         '''.stripIndent()
@@ -38,12 +46,22 @@ pipeline {
     stage('QA') {
       parallel {
         stage('validate') {
+          when {
+            environment name: 'CHANGE_ID', value: '' // Not a Pull Request
+            beforeAgent true
+          }
 
+          agent {
+            docker {
+              image TOOLS_IMAGE
+              args TOOLS_ARGS
+            }
+          }
           steps {
             sh '''\
               #!/bin/bash
               set -ex
-
+              env|grep GIT
               /home/tools/pull.sh
               /home/tools/run.sh --require 3.6 --mode validate
             '''.stripIndent()
@@ -51,7 +69,19 @@ pipeline {
         }
 
         stage('CVE scan') {
-          when { anyOf { branch 'Develop'; changeRequest target: 'Develop' } }
+          when {
+            allOf {
+              anyOf { branch 'Develop'; changeRequest target: 'Develop' }
+              environment name: 'CHANGE_ID', value: '' // Not a Pull Request
+            }
+            beforeAgent true
+          }
+          agent {
+            docker {
+              image TOOLS_IMAGE
+              args TOOLS_ARGS
+            }
+          }
 
           steps {
             script {
@@ -59,7 +89,7 @@ pipeline {
                 sh '''\
                   #!/bin/bash
                   set -ex
-
+                  env|grep GIT
                   /home/tools/cve-scan.sh
                 '''.stripIndent()
                 env.CVE_SCAN_FAILED = false
@@ -81,7 +111,11 @@ pipeline {
 
     stage('Prompt') {
       agent none
-      when { expression { env.CVE_SCAN_FAILED == 'true' } }
+
+      when {
+        expression { env.CVE_SCAN_FAILED == 'true' }
+      }
+
       steps {
         script {
           timeout(time: 15, unit: 'MINUTES') {
@@ -94,6 +128,14 @@ pipeline {
     stage('Release') {
       when {
         environment name: 'CHANGE_ID', value: ''
+        beforeAgent true
+      }
+
+      agent {
+        docker {
+          image TOOLS_IMAGE
+          args TOOLS_ARGS
+        }
       }
 
       steps {
@@ -102,19 +144,6 @@ pipeline {
           set -ex
 
           /home/tools/release.sh
-        '''.stripIndent()
-      }
-    }
-  }
-  post {
-    cleanup {
-      
-      steps {
-        sh '''\
-          #!/bin/bash
-          set -ex
-
-          /home/tools/clean-up.sh
         '''.stripIndent()
       }
     }
