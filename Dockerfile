@@ -12,6 +12,7 @@ RUN chmod u+x /entrypoint.sh
 WORKDIR /home/tools
 
 COPY init.sh .
+COPY clean-up.sh .
 COPY docker/bashrc.sh .bashrc
 COPY release.sh .
 COPY create-bucket.sh .
