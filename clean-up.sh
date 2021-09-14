@@ -17,8 +17,9 @@ aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR}
 aws ecr describe-repositories --repository-names "${AREA,,}/${DOCKER_REPO}" ||
   aws ecr create-repository --image-scanning-configuration scanOnPush=true --repository-name "${AREA,,}/${DOCKER_REPO}"
 
-docker image prune --all --force 
-
 aws ecr batch-delete-image \
   --repository-name "temp-${AREA,,}/${DOCKER_REPO}" \
   --image-ids imageTag="git_${GIT_COMMIT}"
+
+set +e 
+docker rmi `docker images |egrep -v "tools.*latest"|cut -c 45-56`
