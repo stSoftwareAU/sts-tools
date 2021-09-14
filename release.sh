@@ -38,3 +38,5 @@ docker images --digests | grep ${DOCKER_REPO}
 docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:${UNIQUE_EXT}"
 docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:${EXT}"
 docker push --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:latest"
+
+./clean-up.sh

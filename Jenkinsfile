@@ -17,12 +17,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        script {
-          /**
-          * Keep the COMMIT at the start of the build process so that it doesn't change during the build.
-          */
-          env.COMMIT_ID = env.GIT_COMMIT
-        }
+
         sh '''\
             #!/bin/bash
             set -ex
