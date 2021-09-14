@@ -110,6 +110,10 @@ pipeline {
     }
 
     stage('Release') {
+      when {
+        environment name: 'CHANGE_ID', value: ''
+      }
+
       agent {
         docker {
           image 'dga-tools:latest'
@@ -123,6 +127,24 @@ pipeline {
           set -ex
 
           /home/tools/release.sh
+        '''.stripIndent()
+      }
+    }
+  }
+  post {
+    cleanup {
+      agent {
+        docker {
+          image 'dga-tools:latest'
+          args '--volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp:/tmp'
+        }
+      }
+      steps {
+        sh '''\
+          #!/bin/bash
+          set -ex
+
+          /home/tools/clean-up.sh
         '''.stripIndent()
       }
     }
