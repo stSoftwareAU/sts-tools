@@ -21,5 +21,5 @@ aws ecr batch-delete-image \
   --repository-name "temp-${AREA,,}/${DOCKER_REPO}" \
   --image-ids imageTag="git_${GIT_COMMIT}"
 
-set +e 
-docker rmi `docker images |egrep -v "tools.*latest"|cut -c 45-56`
+#set +e 
+#docker rmi `docker images |egrep -v "tools.*latest"|cut -c 45-56`
