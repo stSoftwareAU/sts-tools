@@ -29,7 +29,6 @@ pipeline {
     }
 
     stage('CVE scan') {
-      when { anyOf { branch 'Develop'; changeRequest target: 'Develop' } }
 
       steps {
         script {
