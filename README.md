@@ -1,7 +1,6 @@
-# dga-tools
+# 🟩 dga-tools
 
-
-## 🟨 Yet to be implemented
+Shared scripts to deploy infrastructure. 
 
 ```shell
 ~/src/dga-tools/run.sh -w $(pwd) -m apply
