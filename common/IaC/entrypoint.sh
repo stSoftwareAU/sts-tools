@@ -25,7 +25,9 @@ function doInit() {
 
 function doStore() {
   cp *.tfstate store/
-  cp tf.plan store/
+  if [[ -e tf.plan ]]; then
+    cp tf.plan store/
+  fi
 }
 
 function tryApply() {
