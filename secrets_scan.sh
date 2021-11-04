@@ -56,7 +56,7 @@ if [[ -s ${tmpScan} ]]; then
     exit 1
 fi
 
-find "${SCAN_WORKSPACE}" -type f -not -path '*/\.*' -exec grep -H -RP '[^_](?<![A-Za-z0-9/+=])[A-Za-z0-9/+=]{40}(?![A-Za-z0-9/+=])' {} \; >${tmpScan}
+find "${SCAN_WORKSPACE}" -type f -not -path '*/\.*' -exec grep -H -RP 'key[" ]*=[" ]*(?<![A-Za-z0-9+=])[A-Za-z0-9+=]{40}(?![A-Za-z0-9+=])' {} \; >${tmpScan}
 
 if [[ -s ${tmpScan} ]]; then
     echo "AWS SECRETS must not be checked into GitHub"
