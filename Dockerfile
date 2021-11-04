@@ -17,6 +17,7 @@ COPY docker/bashrc.sh .bashrc
 COPY release.sh .
 COPY create-bucket.sh .
 COPY push.sh .
+COPY secrets_scan.sh .
 COPY common/IaC/ .
 
 RUN chown -R tools /home/tools && \
