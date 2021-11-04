@@ -49,7 +49,7 @@ function cleanUp() {
 
 trap 'cleanUp' EXIT
 
-find "${SCAN_WORKSPACE}" -not -path '*/\.*' -not -path '*/*.css' -type f -exec grep -H -RP '[^_](?<![A-Z0-9])[A-Z0-9]{20}(?![A-Z0-9])' {} \; >${tmpScan}
+find "${SCAN_WORKSPACE}" -not -path '*/\.*' -not -path '*/*.css' -not -path '*/*.png' -type f -exec grep -H -RP '=[" ]*(?<![A-Z0-9])[A-Z0-9]{20}(?![A-Z0-9])' {} \; >${tmpScan}
 
 if [[ -s ${tmpScan} ]]; then
     echo "AWS SECRETS must not be checked into GitHub"
