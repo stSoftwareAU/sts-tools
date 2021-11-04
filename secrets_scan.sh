@@ -49,16 +49,23 @@ function cleanUp() {
 
 trap 'cleanUp' EXIT
 
-find "${SCAN_WORKSPACE}" -not -path '*/\.*' -not -path '*/*.css' -not -path '*/*.png' -type f -exec grep -H -RP '=[" ]*(?<![A-Z0-9])[A-Z0-9]{20}(?![A-Z0-9])' {} \; >${tmpScan}
+find "${SCAN_WORKSPACE}" -not -path '*/\.*' -not -path '*/*.css' -not -path '*/*.png' -type f -exec grep -HP '=[" ]*(?<![A-Z0-9])[A-Z0-9]{20}(?![A-Z0-9])' {} \; >${tmpScan}
 
 if [[ -s ${tmpScan} ]]; then
-    echo "AWS SECRETS must not be checked into GitHub"
+    echo "AWS ACCESS KEY IDs must not be checked into GitHub"
     exit 1
 fi
 
-find "${SCAN_WORKSPACE}" -type f -not -path '*/\.*' -exec grep -H -RP 'key[" ]*=[" ]*(?<![A-Za-z0-9+=])[A-Za-z0-9+=]{40}(?![A-Za-z0-9+=])' {} \; >${tmpScan}
+find "${SCAN_WORKSPACE}" -type f -not -path '*/\.*' -exec grep -HP '[kK][Ee][Yy][" ]*=[" ]*(?<![A-Za-z0-9+=])[A-Za-z0-9+=]{40}(?![A-Za-z0-9+=])' {} \; >${tmpScan}
 
 if [[ -s ${tmpScan} ]]; then
-    echo "AWS SECRETS must not be checked into GitHub"
+    echo "AWS SECRET ACCESS KEYS must not be checked into GitHub"
+    exit 1
+fi
+
+find "${SCAN_WORKSPACE}" -type f -not -path '*/\.*' -exec grep -HP "Authorization['\"=, ]+[a-zA-Z0-9\\-]{20,}" {} \; >${tmpScan}
+
+if [[ -s ${tmpScan} ]]; then
+    echo "Authorization headers must not be checked into GitHub"
     exit 1
 fi
