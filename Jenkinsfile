@@ -27,6 +27,12 @@ pipeline {
         '''.stripIndent()
       }
     }
+    
+    stage( 'Secrets scan'){
+      steps{
+        sh './secrets_scan.sh'
+      }
+    }
 
     stage('CVE scan') {
 
