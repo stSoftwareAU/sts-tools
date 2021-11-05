@@ -69,3 +69,10 @@ if [[ -s ${tmpScan} ]]; then
     echo "Authorization headers must not be checked into GitHub"
     exit 1
 fi
+
+find "${SCAN_WORKSPACE}" -type f -not -path '*/\.*' -not -path '*/*.rst' -exec grep -HP "[a-z]{4,}:\/\/[^:\/]+:[^@]+@.+" {} \; >${tmpScan}
+
+if [[ -s ${tmpScan} ]]; then
+    echo "HTTP basic authentication must not be checked into GitHub"
+    exit 1
+fi
