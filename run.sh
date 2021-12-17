@@ -34,6 +34,11 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 
+  if [[ $# -eq 0 ]]; then
+    echo "Missing option"
+    exit 1
+  fi
+
   shift
 done
 
