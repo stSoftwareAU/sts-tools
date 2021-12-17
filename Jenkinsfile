@@ -27,40 +27,31 @@ pipeline {
         '''.stripIndent()
       }
     }
+    
+
+    stage( 'Secrets scan'){
+      steps{
+        sh './secrets_scan.sh'
+        sh './test/check.sh'
+      }
+    }
 
     stage('CVE scan') {
 
       steps {
         script {
-          try {
             sh '''\
             #!/bin/bash
             set -ex
 
             cp common/IaC/cve-scan.sh ./
-            ./cve-scan.sh
+            ./cve-scan.sh --allow common/IaC/cve-allow.json
           '''.stripIndent()
-            env.CVE_SCAN_FAILED = false
-          } catch (err) {
-            echo "Caught: ${err}"
-            env.CVE_SCAN_FAILED = true
-          }
         }
       }
       post {
         always {
           archiveArtifacts artifacts: 'cve-scan.json', fingerprint: true
-        }
-      }
-    }
-
-    stage('Prompt') {
-      when { expression { env.CVE_SCAN_FAILED == 'true' } }
-      steps {
-        script {
-          timeout(time: 15, unit: 'MINUTES') {
-            input( message: 'CVE scan detected issues', ok: 'Continue?')
-          }
         }
       }
     }
