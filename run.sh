@@ -47,7 +47,7 @@ if [[ ! -d "${TOOLS_WORKSPACE}" ]]; then
   exit 1
 fi
 
-TOOLS_REPO="dga-tools"
+TOOLS_REPO="sts-tools"
 
 mkdir -p "${HOME}/.tmp"
 aws_dir=$(mktemp -d --tmpdir="${HOME}/.tmp" -t aws_XXXXXXXXXX)

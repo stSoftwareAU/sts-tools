@@ -1036,7 +1036,7 @@
         }
     },
     "registryId": "364728477614",
-    "repositoryName": "temp-develop/dga-solr",
+    "repositoryName": "temp-develop/sts-solr",
     "imageId": {
         "imageDigest": "sha256:e3e0756d46863ce4b96236669c6649a558e5aa28d3a553a100d0f09fd00a8154",
         "imageTag": "git_72a3b96eaff09e2140f87781053672f6a4ced09c"

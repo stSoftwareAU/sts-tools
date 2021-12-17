@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# WARNING: Automatically copied from dga-tools
+# WARNING: Automatically copied from sts-tools
 #
 # Turn on errors.
 set -e

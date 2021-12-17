@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 #
-# WARNING: Automatically copied from dga-tools
+# WARNING: Automatically copied from sts-tools
 #
 set -e
 

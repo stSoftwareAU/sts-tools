@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# WARNING: Automatically copied from dga-tools
+# WARNING: Automatically copied from sts-tools
 #
 FROM hashicorp/terraform:1.0.6
 

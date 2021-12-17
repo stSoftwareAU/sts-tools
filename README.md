@@ -1,17 +1,17 @@
-# 🟩 dga-tools
+# 🟩 sts-tools
 
 Shared scripts to deploy infrastructure. 
 
 ```shell
-~/src/dga-tools/run.sh -w $(pwd) -m apply
+~/src/sts-tools/run.sh -w $(pwd) -m apply
 ```
 
 REPL mode 
 ```shell
-~/src/dga-tools/run.sh --workspace $(pwd) --mode repl
+~/src/sts-tools/run.sh --workspace $(pwd) --mode repl
 ```
 ```
-REPL dga-services:Develop
+REPL sts-services:Develop
 
 1) BUILD:   Build the docker image
 2) APPLY:   Apply the IaC
