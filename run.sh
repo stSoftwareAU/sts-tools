@@ -55,7 +55,7 @@ fi
 TOOLS_REPO="sts-tools"
 
 mkdir -p "${HOME}/.tmp"
-aws_dir=$(mktemp -d --tmpdir="${HOME}/.tmp" -t aws_XXXXXXXXXX)
+aws_dir=$(mktemp -d  -t aws_XXXXXXXXXX)
 
 mkdir -p ${HOME}/.aws/cli/cache
 cp -a ${HOME}/.aws/* "${aws_dir}/"
