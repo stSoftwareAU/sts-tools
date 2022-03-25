@@ -1,9 +1,14 @@
 # syntax=docker/dockerfile:1
 FROM amazon/aws-cli:latest
+# RUN ls -la && whoami
 
+ARG USER_ID
+ARG GROUP_ID
+
+# RUN echo ${USER_ID}
 RUN yum install -y git jq tar rsync zip && \
     amazon-linux-extras install docker && \
-    useradd -u 1000 -d /home/tools tools && \
+    useradd -u ${USER_ID} -g ${GROUP_ID} -d /home/tools tools && \
     usermod -aG docker tools
 
 COPY docker/entrypoint.sh /entrypoint.sh
@@ -25,5 +30,5 @@ RUN chown -R tools /home/tools && \
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-USER tools
+# USER tools
 CMD ["--mode", "repl"]

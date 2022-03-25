@@ -62,13 +62,21 @@ cp -a ${HOME}/.aws/* "${aws_dir}/"
 chmod ugo+rxw "${aws_dir}"
 chmod -R ugo+rw "${aws_dir}"
 
+# if [ "$(uname)" == "Darwin" ]; then
+#    userId=$(id -u):$(id -g)
+# else
+#    userId=1000:$(getent group docker | cut -d ':' -f 3)
+# fi
+
+# DOCKER_SOCKET=$(readlink -f /var/run/docker.sock)
+# echo "DOCKER_SOCKET: ${DOCKER_SOCKET}"
 set +e
+#  --user ${userId} \
 docker run \
   --dns 8.8.8.8 \
   --rm \
   --env WHO=$(whoami) \
   --env REQUIRED_VERSION="${REQUIRED_VERSION}" \
-  --user 1000:$(getent group docker | cut -d ':' -f 3) \
   --interactive \
   --tty \
   --volume /var/run/docker.sock:/var/run/docker.sock \
