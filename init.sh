@@ -3,13 +3,13 @@
 # WARNING: Automatically copied from sts-tools.
 #
 set -e
-BASE_DIR="$(cd -P "$(dirname "$BASH_SOURCE")" && pwd -P)"
+BASE_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 cd "${BASE_DIR}"
 
 export TOOLS_VERSION="3.8.2"
 
 function compareVersion() {
-  if [[ $1 == $2 ]]; then
+  if [[ $1 == "$2" ]]; then
     RESULT=0
     return
   fi
@@ -40,9 +40,9 @@ function compareVersion() {
 
 function checkVersion() {
 
-  compareVersion ${REQUIRED_VERSION:-${TOOLS_VERSION}} ${TOOLS_VERSION}
+  compareVersion "${REQUIRED_VERSION:-${TOOLS_VERSION}}" ${TOOLS_VERSION}
 
-  if [[ ${RESULT} > 0 ]]; then
+  if [[ ${RESULT} -gt 0 ]]; then
     echo "FAIL: Required VERSION ${REQUIRED_VERSION}, was ${TOOLS_VERSION}"
     exit 1
   fi
@@ -68,7 +68,7 @@ if [[ -f ${ENV_FILE} ]]; then
 fi
 
 if [[ -z "${ACCOUNT_ID}" ]]; then
-  if [[ ! -z "${PROFILE}" ]]; then
+  if [[ -n "${PROFILE}" ]]; then
     tmpIdentity=$(mktemp /tmp/identity_XXXXXX.json)
     aws sts --profile "${PROFILE}" get-caller-identity >${tmpIdentity}
     ACCOUNT_ID=$(jq -r .Account ${tmpIdentity})
@@ -98,7 +98,7 @@ if [[ -z "${GIT_REPO}" ]]; then
 fi
 
 if [[ -z "${DEPARTMENT}" ]]; then
-  DEPARTMENT=$(echo ${GIT_REPO^^} | cut -d '-' -f 1)
+  DEPARTMENT=$(echo "${GIT_REPO^^}" | cut -d '-' -f 1)
 fi
 
 if [[ -z "${PACKAGE}" ]]; then

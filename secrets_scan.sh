@@ -5,7 +5,7 @@
 # https://aws.amazon.com/blogs/security/a-safer-way-to-distribute-aws-credentials-to-ec2/
 #
 set -e
-BASE_DIR="$(cd -P "$(dirname "$BASH_SOURCE")" && pwd -P)"
+BASE_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 cd "${BASE_DIR}"
 
 SCAN_WORKSPACE="${WORKSPACE}"

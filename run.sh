@@ -1,13 +1,13 @@
 #!/bin/bash
 set -e
-BASE_DIR="$(cd -P "$(dirname "$BASH_SOURCE")" && pwd -P)"
+BASE_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 cd "${BASE_DIR}"
 
 TOOLS_WORKSPACE="${WORKSPACE}"
 args=()
 MODE=""
 
-me=$(basename "$0")
+# me=$(basename "$0")
 while [[ $# -gt 0 ]]; do
   key="$1"
 
@@ -57,8 +57,8 @@ TOOLS_REPO="sts-tools"
 mkdir -p "${HOME}/.tmp"
 aws_dir=$(mktemp -d  -t aws_XXXXXXXXXX)
 
-mkdir -p ${HOME}/.aws/cli/cache
-cp -a ${HOME}/.aws/* "${aws_dir}/"
+mkdir -p "${HOME}/.aws/cli/cache"
+cp -a "${HOME}"/.aws/* "${aws_dir}/"
 chmod ugo+rxw "${aws_dir}"
 chmod -R ugo+rw "${aws_dir}"
 
@@ -88,7 +88,7 @@ docker run \
 
 ERROR=$?
 
-cp -a ${aws_dir}/cli/cache/* ${HOME}/.aws/cli/cache/
-rm -rf ${aws_dir}
+cp -a "${aws_dir}"/cli/cache/* "${HOME}"/.aws/cli/cache/
+rm -rf "${aws_dir}"
 
 exit ${ERROR}

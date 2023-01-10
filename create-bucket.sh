@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ex
-BASE_DIR="$(cd -P "$(dirname "$BASH_SOURCE")" && pwd -P)"
+BASE_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 cd "${BASE_DIR}"
 
 echo "Creating bucket ${S3_BUCKET}"
