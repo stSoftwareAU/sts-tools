@@ -1,7 +1,7 @@
 #!/bin/bash
 # get current branch in git repo
 function parse_git_branch() {
-  cd ${WORKSPACE}
+  cd "${WORKSPACE}"||exit
   BRANCH=$(git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
   if [ ! "${BRANCH}" == "" ]; then
     STAT=$(parse_git_dirty)
@@ -12,8 +12,8 @@ function parse_git_branch() {
 }
 
 function parse_git_repo() {
-  cd ${WORKSPACE}
-  GIT_REPO=$(basename -s .git $(git config --get remote.origin.url))
+  cd "${WORKSPACE}"||exit
+  GIT_REPO=$(basename -s .git "$(git config --get remote.origin.url)")
   echo "${GIT_REPO}"
 }
 
