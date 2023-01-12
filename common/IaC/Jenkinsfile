@@ -68,7 +68,7 @@ pipeline {
             cat > /tmp/json.sh << EOF
             FILE=\\$1
             echo "reformat \\${FILE}"
-            tmpJSON=\\$(mktemp -t reformat_XXXXXXXXXX.json)
+            tmpJSON=\\$(mktemp -t reformat_XXXXXXXXXX)
             jq . \\${FILE} > \\${tmpJSON}
             mv --force \\${tmpJSON} \\${FILE}
             EOF

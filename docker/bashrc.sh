@@ -1,3 +1,4 @@
+#!/bin/bash
 # get current branch in git repo
 function parse_git_branch() {
   cd ${WORKSPACE}

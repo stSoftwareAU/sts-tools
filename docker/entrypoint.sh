@@ -51,17 +51,17 @@ function doValidate() {
 
 function doApply() {
   ./build.sh
-  ./run.sh --mode apply $1 $2
+  ./run.sh --mode apply "$1" "$2"
 }
 
 function doState() {
   ./build.sh
-  ./state.sh $1 $2
+  ./state.sh "$1" "$2"
 }
 
 function doImport() {
   ./build.sh
-  ./import.sh $1 $2
+  ./import.sh "$1" "$2"
 }
 
 function doRelease() {
@@ -104,16 +104,16 @@ function doMode() {
     doValidate
     ;;
   apply)
-    doApply $2 $3
+    doApply "$2" "$3"
     ;;
   init)
     doInit
     ;;
   state)
-    doState $2 $3
+    doState "$2" "$3"
     ;;
   import)
-    doImport $2 $3
+    doImport "$2" "$3"
     ;;
   *)
     echo "${mode}: Unknown mode"
@@ -172,8 +172,8 @@ function doREPL() {
       doMode release
       ;;
     6)
-      read -p 'Resource: ' resource
-      read -p 'ID: ' id
+      read -pr 'Resource: ' resource
+      read -pr 'ID: ' id
       doMode import "${resource}" "${id}"
       ;;
     9)
@@ -194,7 +194,7 @@ function doREPL() {
 
 args=()
 MODE=""
-me=$(basename "$0")
+# me=$(basename "$0")
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -226,5 +226,5 @@ else
   fi
 
   doInit
-  doMode ${MODE} "${args[@]}"
+  doMode "${MODE}" "${args[@]}"
 fi

@@ -14,16 +14,16 @@ fi
 
 ECR="${DOCKER_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
-aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR}
+aws --profile "${PROFILE}" ecr get-login-password | docker login --username AWS --password-stdin "${ECR}"
 
-if [[ ! -z "${GIT_COMMIT}" ]]; then
+if [[ -n "${GIT_COMMIT}" ]]; then
   docker pull --quiet "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:git_${GIT_COMMIT}"
-  docker tag "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:git_${GIT_COMMIT}" ${DOCKER_REPO}:latest
+  docker tag "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:git_${GIT_COMMIT}" "${DOCKER_REPO}:latest"
 else
   echo "No COMMIT_ID using latest"
-  docker pull --quiet ${ECR}/${AREA,,}/${DOCKER_REPO}:latest
-  docker tag ${ECR}/${AREA,,}/${DOCKER_REPO}:latest ${DOCKER_REPO}:latest
+  docker pull --quiet "${ECR}/${AREA,,}/${DOCKER_REPO}:latest"
+  docker tag "${ECR}/${AREA,,}/${DOCKER_REPO}:latest" "${DOCKER_REPO}:latest"
 fi
 
 # List the docker image that was actually pulled.
-docker images --digests | grep ${DOCKER_REPO}
+docker images --digests | grep "${DOCKER_REPO}"

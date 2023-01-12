@@ -12,12 +12,12 @@ fi
 
 ECR="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
-aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR}
+aws --profile "${PROFILE}" ecr get-login-password | docker login --username AWS --password-stdin ${ECR}
 
-aws ecr describe-repositories --repository-names "${AREA,,}/${DOCKER_REPO}" ||
-  aws ecr create-repository --image-scanning-configuration scanOnPush=true --repository-name "${AREA,,}/${DOCKER_REPO}"
+aws --profile "${PROFILE}" ecr describe-repositories --repository-names "${AREA,,}/${DOCKER_REPO}" ||
+  aws --profile "${PROFILE}" ecr create-repository --image-scanning-configuration scanOnPush=true --repository-name "${AREA,,}/${DOCKER_REPO}"
 
-aws ecr batch-delete-image \
+aws --profile "${PROFILE}" ecr batch-delete-image \
   --repository-name "temp-${AREA,,}/${DOCKER_REPO}" \
   --image-ids imageTag="git_${GIT_COMMIT}"
 

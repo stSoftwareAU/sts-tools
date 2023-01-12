@@ -40,11 +40,11 @@ if [[ ! -d "${SCAN_WORKSPACE}" ]]; then
     exit 1
 fi
 
-tmpScan=$(mktemp /tmp/scan_XXXXXX.txt)
+tmpScan=$(mktemp /tmp/scan_XXXXXXXX)
 
 function cleanUp() {
-    cat ${tmpScan}
-    rm ${tmpScan}
+    cat "${tmpScan}"
+    rm "${tmpScan}"
 }
 
 trap 'cleanUp' EXIT

@@ -6,7 +6,7 @@ set -e
 BASE_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 cd "${BASE_DIR}"
 
-export TOOLS_VERSION="3.8.2"
+export TOOLS_VERSION="3.8.4"
 
 function compareVersion() {
   if [[ $1 == "$2" ]]; then
@@ -14,7 +14,7 @@ function compareVersion() {
     return
   fi
   local IFS=.
-  local i ver1=($1) ver2=($2)
+  local i ver1=("$1") ver2=("$2")
   # fill empty fields in ver1 with zeros
   for ((i = ${#ver1[@]}; i < ${#ver2[@]}; i++)); do
     ver1[i]=0
@@ -69,20 +69,20 @@ fi
 
 if [[ -z "${ACCOUNT_ID}" ]]; then
   if [[ -n "${PROFILE}" ]]; then
-    tmpIdentity=$(mktemp /tmp/identity_XXXXXX.json)
-    aws sts --profile "${PROFILE}" get-caller-identity >${tmpIdentity}
-    ACCOUNT_ID=$(jq -r .Account ${tmpIdentity})
+    tmpIdentity=$(mktemp /tmp/identity_XXXXXXXX)
+    aws --profile "${PROFILE}" sts get-caller-identity >"${tmpIdentity}"
+    ACCOUNT_ID=$(jq -r .Account "${tmpIdentity}")
 
-    REGION=$(aws configure --profile "${PROFILE}" get region) || true
+    REGION=$(aws --profile "${PROFILE}" configure get region) || true
   else
 
-    tmpIdentity=$(mktemp /tmp/identity_XXXXXX.json)
+    tmpIdentity=$(mktemp /tmp/identity_XXXXXXXX)
 
-    curl -s http://169.254.169.254/latest/dynamic/instance-identity/document >${tmpIdentity} || true
+    curl -s http://169.254.169.254/latest/dynamic/instance-identity/document >"${tmpIdentity}" || true
 
     if [[ -s ${tmpIdentity} ]]; then
-      ACCOUNT_ID=$(jq -r .accountId ${tmpIdentity})
-      REGION=$(jq -r .region ${tmpIdentity})
+      ACCOUNT_ID=$(jq -r .accountId "${tmpIdentity}")
+      REGION=$(jq -r .region "${tmpIdentity}")
     fi
   fi
 fi
@@ -114,9 +114,9 @@ fi
 
 if [[ -z "${AREA}" ]]; then
   # If a PR then use CHANGE_BRANCH
-  if [[ ! -z "${CHANGE_BRANCH}" ]]; then
+  if [[ -n "${CHANGE_BRANCH}" ]]; then
     AREA="${CHANGE_BRANCH}"
-  elif [[ ! -z "${BRANCH_NAME}" ]]; then
+  elif [[ -n "${BRANCH_NAME}" ]]; then
     AREA="${BRANCH_NAME}"
   else
     cd "${WORKSPACE}"
@@ -127,23 +127,21 @@ if [[ -z "${AREA}" ]]; then
   fi
 fi
 
-tmpAliases=$(mktemp /tmp/aliases_XXXXXX.json)
-if [[ ! -z "${PROFILE}" ]]; then
-  aws iam --profile ${PROFILE} list-account-aliases >${tmpAliases}
-else
-  aws iam list-account-aliases >${tmpAliases}
-fi
+tmpAliases=$(mktemp /tmp/aliases_XXXXXXXX)
 
-ACCOUNT_ALIAS=$(jq -r .AccountAliases[0] ${tmpAliases} | tr '[:upper:]' '[:lower]')
-rm ${tmpAliases}
+aws --profile "${PROFILE}" iam list-account-aliases >"${tmpAliases}"
 
-if [[ ! ${ACCOUNT_ALIAS} =~ "${DEPARTMENT,,}".* ]]; then
+ACCOUNT_ALIAS=$(jq -r .AccountAliases[0] "${tmpAliases}" | tr '[:upper:]' '[:lower]')
+rm "${tmpAliases}"
+checkDeparment=$(echo "${DEPARTMENT}" | tr '[:upper:]' '[:lower:]')
+if [[ ! "${ACCOUNT_ALIAS}" =~ ${checkDeparment}.* ]]; then
   echo "Wrong account (${ACCOUNT_ALIAS}) for department (${DEPARTMENT})"
   exit 1
 fi
 
-if [[ ! ${ACCOUNT_ALIAS} =~ ^.*"-pipeline"$ ]]; then
-  if [[ ! ${ACCOUNT_ALIAS} =~ ^.*"${AREA,,}"$ ]]; then
+if [[ ! ${ACCOUNT_ALIAS} =~ ^.*-pipeline$ ]]; then
+  checkArea=$(echo "${AREA}" | tr '[:upper:]' '[:lower:]')
+  if [[ ! ${ACCOUNT_ALIAS} =~ ^.*${checkArea}$ ]]; then
     echo "Wrong AREA (${AREA}) for account (${ACCOUNT_ALIAS})"
     exit 1
   fi
@@ -160,43 +158,43 @@ export REGION="${REGION}"
 export AWS_DEFAULT_REGION="${REGION}"
 
 if [[ -z "${DOCKER_REPO}" ]]; then
-  DOCKER_REPO="${GIT_REPO,,}"
+  DOCKER_REPO=$(echo "${GIT_REPO}" | tr '[:upper:]' '[:lower:]')
 fi
 
 export DOCKER_REPO
 
-if [[ ! -z "${DOCKER_ACCOUNT_ID}" ]]; then
+if [[ -n "${DOCKER_ACCOUNT_ID}" ]]; then
   export DOCKER_ACCOUNT_ID
 fi
 
 if [[ -z "${ROLE}" ]]; then
-  if [[ ! -z "${PROFILE}" ]]; then
-    ROLE=$(aws sts --profile "${PROFILE}" get-caller-identity | jq -r .Arn | cut -d '/' -f 2)
+  if [[ -n "${PROFILE}" ]]; then
+    ROLE=$(aws --profile "${PROFILE}" sts get-caller-identity | jq -r .Arn | cut -d '/' -f 2)
   fi
 fi
 
-if [[ ! -z "${ROLE}" ]]; then
+if [[ -z "${PROFILE}" ]]; then
   ASSUME_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/${ROLE}"
 
-  profileArg=""
+  tmpCredentials=$(mktemp /tmp/credentials_XXXXXXXX)
+  aws sts assume-role --role-arn "${ASSUME_ROLE_ARN}" --role-session-name "Deploy_${REPO:${PACKAGE}}" >"${tmpCredentials}"
 
-  if [[ ! -z "${PROFILE}" ]]; then
-    profileArg=" --profile ${PROFILE}"
-  fi
-
-  tmpCredentials=$(mktemp /tmp/credentials_XXXXXX.json)
-  aws sts assume-role ${profileArg} --role-arn $ASSUME_ROLE_ARN --role-session-name "Deploy_${REPO:${PACKAGE}}" >${tmpCredentials}
-
-  export AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' ${tmpCredentials})
-  export AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' ${tmpCredentials})
-  export AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' ${tmpCredentials})
-
-  rm ${tmpCredentials}
+  AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' "${tmpCredentials}")
+  export AWS_ACCESS_KEY_ID
+  AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' "${tmpCredentials}")
+  export AWS_SECRET_ACCESS_KEY
+  AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' "${tmpCredentials}")
+  export AWS_SESSION_TOKEN
+  
+  rm "${tmpCredentials}"
+else
+  export PROFILE
 fi
 
 REAL_AREA=$(echo "${ACCOUNT_ALIAS}" | cut -d '-' -f 2)
-export S3_BUCKET=$(echo "${DEPARTMENT}-terraform-${REAL_AREA}-${REGION}" | tr "[:upper:]" "[:lower:]")
-LIST_BUCKETS=$(aws s3api list-buckets)
+S3_BUCKET=$(echo "${DEPARTMENT}-terraform-${REAL_AREA}-${REGION}" | tr "[:upper:]" "[:lower:]")
+export S3_BUCKET
+LIST_BUCKETS=$(aws --profile "${PROFILE}" s3api list-buckets)
 
 CreationDate=$(jq ".Buckets[]|select(.Name==\"${S3_BUCKET}\").CreationDate" <<<"$LIST_BUCKETS")
 if [[ -z "${CreationDate}" ]]; then

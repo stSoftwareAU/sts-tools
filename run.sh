@@ -72,16 +72,17 @@ chmod -R ugo+rw "${aws_dir}"
 # echo "DOCKER_SOCKET: ${DOCKER_SOCKET}"
 set +e
 #  --user ${userId} \
+WHO=$(whoami)
 docker run \
   --dns 8.8.8.8 \
   --rm \
-  --env WHO=$(whoami) \
+  --env WHO="${WHO}" \
   --env REQUIRED_VERSION="${REQUIRED_VERSION}" \
   --interactive \
   --tty \
   --volume /var/run/docker.sock:/var/run/docker.sock \
-  --volume ${TOOLS_WORKSPACE}:/home/workspace \
-  --volume ${aws_dir}:/home/tools/.aws \
+  --volume "${TOOLS_WORKSPACE}":/home/workspace \
+  --volume "${aws_dir}":/home/tools/.aws \
   --volume /tmp:/tmp \
   ${TOOLS_REPO}:latest \
   "${args[@]}"

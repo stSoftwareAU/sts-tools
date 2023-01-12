@@ -2,7 +2,7 @@
 #
 # WARNING: Automatically copied from sts-tools
 #
-FROM hashicorp/terraform:1.0.6
+FROM hashicorp/terraform:1.3.7
 
 COPY --chown=nobody:nobody entrypoint.sh .
 RUN chmod u+x entrypoint.sh
