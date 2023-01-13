@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 #
 # WARNING: Automatically copied from sts-tools
 #
@@ -18,9 +18,12 @@ function doInit() {
 
   for f in .config/*.auto.tfvars.json; do
     if [[ -e "$f" ]]; then
-      cp $f .
+      cp "$f" .
     fi
   done
+  HOME=$(pwd)
+  export HOME
+
 }
 
 function doStore() {
@@ -67,7 +70,7 @@ function doApply() {
     fi
 
     echo "Retrying after ${PAUSE:-60} seconds. Attempt ${n} of ${ATTEMPTS:-1}"
-    sleep ${PAUSE:-60}
+    sleep "${PAUSE:-60}"
   done
   set -e
 
@@ -95,7 +98,7 @@ function doState() {
   terraform init -input=false
   terraform validate
 
-  terraform state $1 $2
+  terraform state "$1" "$2"
   doStore
 }
 
@@ -105,7 +108,7 @@ function doImport() {
   terraform init -input=false
   terraform validate
 
-  terraform import $1 $2
+  terraform import "$1" "$2"
   doStore
 }
 
@@ -139,19 +142,19 @@ shell)
   ;;
 apply-no-color)
   NO_COLOR_ARG="-no-color"
-  doApply $2 $3
+  doApply "$2" "$3"
   ;;
 apply)
-  doApply $2 $3
+  doApply "$2" "$3"
   ;;
 plan)
   doPlan
   ;;
 state)
-  doState $2 $3
+  doState "$2" "$3"
   ;;
 import)
-  doImport $2 $3
+  doImport "$2" "$3"
   ;;
 destroy)
   doDestroy

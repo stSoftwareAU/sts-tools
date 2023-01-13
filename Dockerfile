@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1
 FROM amazon/aws-cli:latest
-# RUN ls -la && whoami
 
 ARG USER_ID
 ARG GROUP_ID

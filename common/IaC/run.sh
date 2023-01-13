@@ -66,7 +66,7 @@ if [[ ! "${MODE}" =~ (validate) ]]; then
   APP=$(jq ".Items[]|select( .Name==\"${DOCKER_REPO}\" )" "${tmpApps}")
   rm "${tmpApps}"
   if [[ -n "${APP}" ]]; then
-    aws --profile "${PROFILE}" appconfig get-configuration --application "${DOCKER_REPO}" --environment "${AREA,,}" --configuration config --client-id any-id ${tmpConfig}/config.auto.tfvars.json
+    aws --profile "${PROFILE}" appconfig get-configuration --application "${DOCKER_REPO}" --environment "${AREA,,}" --configuration config --client-id any-id "${tmpConfig}/config.auto.tfvars.json"
   fi
 fi
 
@@ -80,6 +80,12 @@ chmod -R ugo+rw "${tf_dir}"
 chmod ugo+rxw "${tmpConfig}"
 chmod -R ugo+rw "${tmpConfig}"
 
+prefix=".sts-tools#aws_"
+find /tmp -name "${prefix}" -exec rm -rvf {} \;
+tmpAWS=$(mktemp -d -t "${prefix}XXXXXXXXXX")
+AWS_PROFILE=${PROFILE}
+export AWS_PROFILE
+cp -a .aws/* "${tmpAWS}/"
 docker run \
   --dns 8.8.8.8 \
   --rm \
@@ -89,12 +95,14 @@ docker run \
   --env AWS_SECRET_ACCESS_KEY \
   --env AWS_SESSION_TOKEN \
   --env AWS_DEFAULT_REGION \
-  --env PROFILE \
+  --env AWS_PROFILE \
+  --volume "${tmpAWS}:/home/IaC/.aws" \
   --volume "${tf_dir}/store:/home/IaC/store" \
   --volume "${tmpConfig}:/home/IaC/.config" \
   "${DOCKER_REPO}:latest" \
   "${MODE}" "${args[@]}"
 
+rm -rf "${tmpAWS}"
 rm -rf "${tmpConfig}"
 
 if [[ -s ${tf_dir}/store/tf.plan ]]; then 
