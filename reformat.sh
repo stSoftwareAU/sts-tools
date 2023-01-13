@@ -5,7 +5,7 @@ cd "${BASE_DIR}"
 
 TOOLS_WORKSPACE="${WORKSPACE}"
 
-me=$(basename "$0")
+# me=$(basename "$0")
 while [[ $# -gt 0 ]]; do
   key="$1"
 
@@ -29,4 +29,4 @@ if [[ -z "${TOOLS_WORKSPACE}" ]]; then
   exit 1
 fi
 
-docker run --volume ${TOOLS_WORKSPACE}/IaC:/home/IaC --rm hashicorp/terraform:light -chdir=/home/IaC fmt
+docker run --volume "${TOOLS_WORKSPACE}/IaC:/home/IaC" --rm hashicorp/terraform:light -chdir=/home/IaC fmt
