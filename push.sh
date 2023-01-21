@@ -19,15 +19,15 @@ fi
 . ./init.sh
 
 ECR="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
-
+AREA=$(echo "${AREA}" | tr '[:upper:]' '[:lower:]')
 aws --profile "${PROFILE}" ecr get-login-password | docker login --username AWS --password-stdin "${ECR}"
 
-aws --profile "${PROFILE}" ecr describe-repositories --repository-names "temp-${AREA,,}/${DOCKER_REPO}" ||
-  aws --profile "${PROFILE}" ecr create-repository --image-scanning-configuration scanOnPush=true --repository-name "temp-${AREA,,}/${DOCKER_REPO}"
+aws --profile "${PROFILE}" ecr describe-repositories --repository-names "temp-${AREA}/${DOCKER_REPO}" ||
+  aws --profile "${PROFILE}" ecr create-repository --image-scanning-configuration scanOnPush=true --repository-name "temp-${AREA}/${DOCKER_REPO}"
 
-docker tag "${DOCKER_REPO}:latest" "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:git_${GIT_COMMIT}"
+docker tag "${DOCKER_REPO}:latest" "${ECR}/temp-${AREA}/${DOCKER_REPO}:git_${GIT_COMMIT}"
 
 # List the docker image that will be pushed.
 docker images --digests | grep "${DOCKER_REPO}"
 
-docker push --quiet "${ECR}/temp-${AREA,,}/${DOCKER_REPO}:git_${GIT_COMMIT}"
+docker push --quiet "${ECR}/temp-${AREA}/${DOCKER_REPO}:git_${GIT_COMMIT}"
