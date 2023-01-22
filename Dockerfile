@@ -5,11 +5,13 @@ ARG USER_ID
 ARG GROUP_ID
 
 # RUN echo ${USER_ID}
-RUN yum install -y git jq tar rsync zip && \
+RUN yum update -y && \
+    yum install -y git jq tar rsync zip && \
     groupadd --force --gid ${GROUP_ID} hostGroup && \
     amazon-linux-extras install docker && \
     useradd -u ${USER_ID} -g ${GROUP_ID} -d /home/tools tools && \
-    usermod -aG docker tools
+    usermod -aG docker tools && \
+    yum clean all
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh
