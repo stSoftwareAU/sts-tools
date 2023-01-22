@@ -173,7 +173,7 @@ if [[ -z "${ROLE}" ]]; then
   fi
 fi
 
-if [[ -z "${PROFILE}" ]]; then
+if [[ -n "${ROLE}" ]]; then
   ASSUME_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/${ROLE}"
 
   tmpCredentials=$(mktemp /tmp/credentials_XXXXXXXX)
