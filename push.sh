@@ -3,7 +3,7 @@
 # WARNING: Automatically copied from sts-tools
 #
 # Turn on errors.
-set -e
+set -ex
 # BASE_DIR is picked up from the location of this script.
 BASE_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 cd "${BASE_DIR}"
@@ -17,7 +17,7 @@ if [[ -z "${GIT_COMMIT}" ]]; then
 fi
 
 . ./init.sh
-
+env
 ECR="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 AREA=$(echo "${AREA}" | tr '[:upper:]' '[:lower:]')
 aws --profile "${PROFILE}" ecr get-login-password | docker login --username AWS --password-stdin "${ECR}"
