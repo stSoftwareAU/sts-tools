@@ -6,6 +6,7 @@ ARG GROUP_ID
 
 # RUN echo ${USER_ID}
 RUN yum install -y git jq tar rsync zip && \
+    groupadd --force --gid ${GROUP_ID} hostGroup && \
     amazon-linux-extras install docker && \
     useradd -u ${USER_ID} -g ${GROUP_ID} -d /home/tools tools && \
     usermod -aG docker tools
