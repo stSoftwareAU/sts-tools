@@ -84,8 +84,10 @@ prefix=".sts-tools#aws_"
 set +e
 find /tmp -name "${prefix}" -exec rm -rvf {} \;
 set -e
-AWS_PROFILE=${PROFILE}
-export AWS_PROFILE
+if [[ -n "${PROFILE}" ]]; then
+  AWS_PROFILE=${PROFILE}
+  export AWS_PROFILE
+fi 
 
 tmpAWS=$(mktemp -d -t "${prefix}XXXXXXXXXX")
 if [[ -d .aws ]]; then
