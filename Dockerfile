@@ -11,7 +11,8 @@ RUN yum update -y && \
     amazon-linux-extras install docker && \
     useradd -u ${USER_ID} -g ${GROUP_ID} -d /home/tools tools && \
     usermod -aG docker tools && \
-    yum clean all
+    yum clean all && \
+    rm -rf /var/cache/yum
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh

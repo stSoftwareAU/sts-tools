@@ -17,7 +17,7 @@ if [[ -z "${GIT_COMMIT}" ]]; then
 fi
 
 . ./init.sh
-env
+
 ECR="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 AREA=$(echo "${AREA}" | tr '[:upper:]' '[:lower:]')
 aws --profile "${PROFILE}" ecr get-login-password | docker login --username AWS --password-stdin "${ECR}"
