@@ -24,11 +24,11 @@ function compareVersion() {
       # fill empty fields in ver2 with zeros
       ver2[i]=0
     fi
-    if ((10#${ver1[i]} > 10#${ver2[i]})); then
+    if (( ver1[i] > ver2[i])); then
       RESULT=1
       return
     fi
-    if ((10#${ver1[i]} < 10#${ver2[i]})); then
+    if ((ver1[i] < ver2[i])); then
       RESULT=-1
       return
     fi
