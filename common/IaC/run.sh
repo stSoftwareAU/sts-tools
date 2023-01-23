@@ -84,10 +84,14 @@ prefix=".sts-tools#aws_"
 set +e
 find /tmp -name "${prefix}" -exec rm -rvf {} \;
 set -e
-tmpAWS=$(mktemp -d -t "${prefix}XXXXXXXXXX")
 AWS_PROFILE=${PROFILE}
 export AWS_PROFILE
-cp -a .aws/* "${tmpAWS}/"
+
+tmpAWS=$(mktemp -d -t "${prefix}XXXXXXXXXX")
+if [[ -d .aws ]]; then
+  cp -a .aws/* "${tmpAWS}/"
+fi
+
 docker run \
   --dns 8.8.8.8 \
   --rm \
