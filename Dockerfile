@@ -16,12 +16,10 @@ ARG MAVEN_VERSION=3.9.3
 RUN yum update -y
 RUN yum install -y git jq tar rsync zip unzip
 RUN groupadd --force --gid ${GROUP_ID} hostGroup
-RUN amazon-linux-extras install docker
+RUN amazon-linux-extras install docker java-openjdk11 
 RUN useradd -u ${USER_ID} -g ${GROUP_ID} -d /home/tools tools
 RUN usermod -aG docker tools
 RUN mkdir -p /usr/lib/jvm/
-RUN curl -Lso /tmp/amazon-corretto.tar.gz https://corretto.aws/downloads/latest/amazon-corretto-11-x64-linux-jdk.tar.gz
-RUN tar xzf /tmp/amazon-corretto.tar.gz -C /usr/lib/jvm/
 RUN curl -Lso /tmp/apache-ant.tar.gz https://downloads.apache.org/ant/binaries/apache-ant-${ANT_VERSION}-bin.tar.gz
 RUN tar xzf /tmp/apache-ant.tar.gz -C /usr/local/
 RUN mv /usr/local/apache-ant-${ANT_VERSION} ${ANT_HOME}
@@ -48,6 +46,12 @@ COPY common/IaC/ .
 
 RUN chown -R tools /home/tools && \
     chmod -R u+x /home/tools/*.sh
+
+RUN echo "$PATH" 
+RUN java --version &&\
+    JAVA_HOME=/usr/lib/jvm/jre-openjdk && \
+    mvn --version && \
+    ant -version
 
 ENTRYPOINT ["/entrypoint.sh"]
 
