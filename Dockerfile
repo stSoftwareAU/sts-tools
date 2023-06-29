@@ -4,15 +4,33 @@ FROM amazon/aws-cli:latest
 ARG USER_ID
 ARG GROUP_ID
 
-# RUN echo ${USER_ID}
+# Java and Apache Tools
+ENV JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto.x86_64
+ENV ANT_HOME=/usr/local/ant
+ENV MAVEN_HOME=/usr/local/maven
+ENV PATH=${PATH}:${JAVA_HOME}/bin:${ANT_HOME}/bin:${MAVEN_HOME}/bin
+
+# Version number for Apache Ant and Maven
+ARG ANT_VERSION=1.10.11
+ARG MAVEN_VERSION=3.8.3
+
 RUN yum update -y && \
     yum install -y git jq tar rsync zip unzip && \
     groupadd --force --gid ${GROUP_ID} hostGroup && \
     amazon-linux-extras install docker && \
     useradd -u ${USER_ID} -g ${GROUP_ID} -d /home/tools tools && \
     usermod -aG docker tools && \
+    curl -Lso /tmp/amazon-corretto.tar.gz https://corretto.aws/downloads/latest/amazon-corretto-11-x64-linux-jdk.tar.gz && \
+    tar xzf /tmp/amazon-corretto.tar.gz -C /usr/lib/jvm/ && \
+    curl -Lso /tmp/apache-ant.tar.gz https://downloads.apache.org/ant/binaries/apache-ant-${ANT_VERSION}-bin.tar.gz && \
+    tar xzf /tmp/apache-ant.tar.gz -C /usr/local/ && \
+    mv /usr/local/apache-ant-${ANT_VERSION} ${ANT_HOME} && \
+    curl -Lso /tmp/apache-maven.tar.gz https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
+    tar xzf /tmp/apache-maven.tar.gz -C /usr/local/ && \
+    mv /usr/local/apache-maven-${MAVEN_VERSION} ${MAVEN_HOME} && \
     yum clean all && \
-    rm -rf /var/cache/yum
+    rm -rf /var/cache/yum && \
+    rm -rf /tmp/*.tar.gz
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh
