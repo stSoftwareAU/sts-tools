@@ -1,4 +1,4 @@
-FROM amazon/aws-cli:latest
+FROM amazoncorretto:11
 
 ARG USER_ID
 ARG GROUP_ID
@@ -16,7 +16,7 @@ ARG MAVEN_VERSION=3.9.3
 RUN yum update -y
 RUN yum install -y git jq tar rsync zip unzip
 RUN groupadd --force --gid ${GROUP_ID} hostGroup
-RUN amazon-linux-extras install docker java-openjdk11 
+RUN amazon-linux-extras install docker
 RUN useradd -u ${USER_ID} -g ${GROUP_ID} -d /home/tools tools
 RUN usermod -aG docker tools
 RUN mkdir -p /usr/lib/jvm/
@@ -48,10 +48,10 @@ RUN chown -R tools /home/tools && \
     chmod -R u+x /home/tools/*.sh
 
 RUN echo "$PATH" 
-RUN java --version &&\
-    JAVA_HOME=/usr/lib/jvm/jre-openjdk && \
-    mvn --version && \
-    ant -version
+# RUN java --version &&\
+#     JAVA_HOME=/usr/lib/jvm/jre-openjdk && \
+#     mvn --version && \
+#     ant -version
 
 ENTRYPOINT ["/entrypoint.sh"]
 
