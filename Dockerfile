@@ -4,7 +4,6 @@ ARG USER_ID
 ARG GROUP_ID
 
 # Java and Apache Tools
-ENV JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto.x86_64
 ENV ANT_HOME=/usr/local/ant
 ENV MAVEN_HOME=/usr/local/maven
 ENV PATH=${PATH}:${JAVA_HOME}/bin:${ANT_HOME}/bin:${MAVEN_HOME}/bin
@@ -48,10 +47,13 @@ RUN chown -R tools /home/tools && \
     chmod -R u+x /home/tools/*.sh
 
 RUN echo "$PATH" 
-# RUN java --version &&\
-#     JAVA_HOME=/usr/lib/jvm/jre-openjdk && \
-#     mvn --version && \
-#     ant -version
+RUN echo $JAVA_HOME
+RUN ls -la /usr/lib/jvm/
+RUN type java && \
+    type javac && \
+    java --version && \
+    mvn --version && \
+    ant -version
 
 ENTRYPOINT ["/entrypoint.sh"]
 
