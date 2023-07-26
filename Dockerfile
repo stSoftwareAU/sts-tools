@@ -13,7 +13,7 @@ ARG ANT_VERSION=1.10.13
 ARG MAVEN_VERSION=3.9.3
 
 RUN yum update -y
-RUN yum install -y git jq tar rsync zip unzip
+RUN yum install -y git jq tar rsync zip unzip awscli
 RUN groupadd --force --gid ${GROUP_ID} hostGroup
 RUN amazon-linux-extras install docker
 RUN useradd -u ${USER_ID} -g ${GROUP_ID} -d /home/tools tools
