@@ -24,47 +24,57 @@ function doShell() {
 }
 
 function doBuild() {
+  doInit
   ./build.sh
 }
 
 function doPull() {
+  doInit
   ./pull.sh
 }
 
 function doPlan() {
+  doInit
   ./plan.sh
 }
 
 function doDestroy() {
+  doInit
   ./build.sh
   ./run.sh --mode destroy
 }
 
 function doPush() {
+  doInit
   ./push.sh
 }
 
 function doValidate() {
+  doInit
   ./build.sh
   ./run.sh --mode validate
 }
 
 function doApply() {
+  doInit
   ./build.sh
   ./run.sh --mode apply "$1" "$2"
 }
 
 function doState() {
+  doInit
   ./build.sh
   ./state.sh "$1" "$2"
 }
 
 function doImport() {
+  doInit
   ./build.sh
   ./import.sh "$1" "$2"
 }
 
 function doRelease() {
+  doInit
   ./release.sh
 }
 
@@ -211,8 +221,7 @@ while [[ $# -gt 0 ]]; do
 
   shift
 done
-
-setWS
+echo "ZZZ ${MODE}"
 export HOME=/home/tools
 export PATH="/home/tools:${PATH}"
 
@@ -220,11 +229,10 @@ if [[ -z "${MODE}" ]]; then
   exec "${args[@]}"
 else
 
-  if [[ ! -d "${WORKSPACE}/IaC" ]]; then
-    echo "ERROR: Not A IaC workspace: ${WORKSPACE}"
-    exit 1
-  fi
+  # if [[ ! -d "${WORKSPACE}/IaC" ]]; then
+  #   echo "ERROR: Not A IaC workspace: ${WORKSPACE}"
+  #   exit 1
+  # fi
 
-  doInit
   doMode "${MODE}" "${args[@]}"
 fi
