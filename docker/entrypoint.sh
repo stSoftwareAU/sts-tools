@@ -221,7 +221,7 @@ while [[ $# -gt 0 ]]; do
 
   shift
 done
-echo "ZZZ ${MODE}"
+
 export HOME=/home/tools
 export PATH="/home/tools:${PATH}"
 
