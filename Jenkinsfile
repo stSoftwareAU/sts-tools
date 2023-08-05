@@ -57,6 +57,9 @@ pipeline {
     }
 
     stage('Release') {
+      when {
+        environment name: 'BRANCH_NAME', value: 'Develop'
+      }
       steps {
         sh '''\
           #!/bin/bash

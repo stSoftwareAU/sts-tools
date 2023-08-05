@@ -10,10 +10,10 @@ ENV PATH=${PATH}:${JAVA_HOME}/bin:${ANT_HOME}/bin:${MAVEN_HOME}/bin
 
 # Version number for Apache Ant and Maven
 ARG ANT_VERSION=1.10.13
-ARG MAVEN_VERSION=3.9.3
+ARG MAVEN_VERSION=3.9.4
 
 RUN yum update -y
-RUN yum install -y git jq tar rsync zip unzip awscli
+RUN yum install -y git jq tar rsync zip unzip awscli aspell
 RUN groupadd --force --gid ${GROUP_ID} hostGroup
 RUN amazon-linux-extras install docker
 RUN useradd -u ${USER_ID} -g ${GROUP_ID} -d /home/tools tools
