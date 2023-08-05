@@ -13,7 +13,8 @@ ARG ANT_VERSION=1.10.13
 ARG MAVEN_VERSION=3.9.4
 
 RUN yum update -y
-RUN yum install -y git jq tar rsync zip unzip awscli aspell
+RUN yum install -y git jq tar rsync zip unzip awscli aspell gzip wget bzip2 which make gcc
+
 RUN groupadd --force --gid ${GROUP_ID} hostGroup
 RUN amazon-linux-extras install docker
 RUN useradd -u ${USER_ID} -g ${GROUP_ID} -d /home/tools tools
@@ -25,9 +26,17 @@ RUN mv /usr/local/apache-ant-${ANT_VERSION} ${ANT_HOME}
 RUN curl -Lso /tmp/apache-maven.tar.gz https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz
 RUN tar xzf /tmp/apache-maven.tar.gz -C /usr/local/
 RUN mv /usr/local/apache-maven-${MAVEN_VERSION} ${MAVEN_HOME}
+# Download and install the English dictionary for Aspell
+RUN wget http://ftp.gnu.org/gnu/aspell/dict/en/aspell6-en-2020.12.07-0.tar.bz2 \
+    && tar xjf aspell6-en-2020.12.07-0.tar.bz2 \
+    && cd aspell6-en-2020.12.07-0 \
+    && ./configure \
+    && make \
+    && make install
+# Cleanup
+RUN yum remove -y wget bzip2 which make gcc 
 RUN yum clean all
-RUN rm -rf /var/cache/yum
-RUN rm -rf /tmp/*.tar.gz
+RUN rm -rf /tmp/*.tar.gz aspell6-en-2020.12.07-0 aspell6-en-2020.12.07-0.tar.bz2 /var/cache/yum
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod u+x /entrypoint.sh
