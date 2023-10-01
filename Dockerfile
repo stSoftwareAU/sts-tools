@@ -13,8 +13,8 @@ ARG ANT_VERSION=1.10.13
 ARG MAVEN_VERSION=3.9.4
 
 RUN yum update -y
-RUN yum install -y git jq tar rsync zip unzip awscli aspell gzip wget bzip2 which make gcc
-
+RUN yum install -y git jq tar rsync zip unzip awscli aspell gzip wget bzip2 which make gcc pip
+RUN pip install lcov-cobertura
 RUN groupadd --force --gid ${GROUP_ID} hostGroup
 RUN amazon-linux-extras install docker
 RUN useradd -u ${USER_ID} -g ${GROUP_ID} -d /home/tools tools
@@ -66,5 +66,5 @@ RUN type java && \
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-# USER tools
+USER tools
 CMD ["--mode", "repl"]
